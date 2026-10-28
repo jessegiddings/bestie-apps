@@ -6,7 +6,7 @@ Three small apps hosted in her voice, sharing one engine.
 | --- | --- | --- | --- |
 | Dry tracker (working title "Dry Tracker") | `apps/dry-tracker` | v1 screens built | Jan 1, 2027 |
 | Daily pep talks | `apps/pep-talks` | not started | week of Feb 8, 2027 |
-| Party game | `apps/party-game` | not started | April 2027 |
+| Party game (working title "Bestie Night") | `apps/party-game` | first playable build | April 2027 |
 
 `packages/core` (`@bestie/core`) holds what all three share: the voice player (real recordings only, with captions while a clip isn't recorded yet), streak and date math, purchases (RevenueCat, with a mock mode for testing), and device storage.
 
@@ -17,6 +17,7 @@ npm install
 npm test            # all unit tests
 npm run typecheck
 npm run dry         # starts the dry tracker in Expo (press w for web, or scan with Expo Go)
+npm run party       # starts the party game the same way
 ```
 
 Copy `apps/dry-tracker/.env.example` to `.env` and fill in keys when you have them. With no keys:
@@ -43,6 +44,17 @@ Copy `apps/dry-tracker/.env.example` to `.env` and fill in keys when you have th
 All words live in `apps/dry-tracker/src/content/` (`checkins.ts`, `cravings.ts`, `clips.ts`). Edit them freely; see `docs/her-scripts.md` for the sheet she reads from.
 
 To add a recording: export as `.m4a`, name it after the clip id (for example `checkin-7.m4a`), drop it in `apps/dry-tracker/assets/voice/`, and set `asset: require('../../assets/voice/checkin-7.m4a')` on that entry. No screen changes are needed. Never use a synthetic or cloned voice.
+
+## Party game: what's in the first build
+
+A full game night on one phone, 3 to 10 players, hosted in her voice. Concept doc: https://claude.ai/artifact/77fb61Kv6cKyMoYemnHpA3
+
+- **Five games:** Point Blank (who's most likely to, with her 3-2-1 countdown), Bestie Test (hot seat, four options), Odd One Out (pass-the-phone imposter), Real or Made Up (secret truth or bluff, 45 second story), Last Word (hot potato with a hidden 10 to 25 second timer).
+- **A night** is all five in a row with a scoreboard after each; the last round counts double, ties go to sudden death, and she crowns the Bestie of the Night. Any single game can also be played on its own.
+- **Decks:** Family (free) and Friends (VIP Pass). Cards are on-screen text only, so new decks need no recording. All game logic lives in `apps/party-game/src/game/night.ts` with tests.
+- **Her lines:** 35 host lines in `apps/party-game/src/content/host.ts`; the sheet she reads from is `docs/party-game-host-script.md`. Captions show until a line is recorded.
+- **VIP Pass:** $14.99 once or $2.99/month (`party_vip_lifetime`, `party_vip_monthly`, entitlement `vip`), test mode until RevenueCat keys exist.
+- **Web preview:** `apps/party-game/vercel.json` builds the web version when a Vercel project's root directory is set to `apps/party-game` (kept separate from the dry tracker's root `vercel.json`).
 
 ## Rules for every app here
 - Her real voice only. No AI voice cloning.
