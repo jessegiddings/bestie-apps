@@ -1,9 +1,9 @@
 {
   "expo": {
-    "name": "Hey Bestie",
+    "name": "Morning Bestie",
     "slug": "pep-talks",
     "version": "0.1.0",
-    "scheme": "heybestie",
+    "scheme": "morningbestie",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
     "backgroundColor": "#FFF6F0",

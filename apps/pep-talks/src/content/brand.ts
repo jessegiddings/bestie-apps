@@ -1,8 +1,8 @@
 /**
- * Names in one place. "Hey Bestie" is the working title until Jesse picks a name, and the host
+ * Names in one place. "Morning Bestie" is the working name (morningbestie.com and .app are open), and the host
  * name is a placeholder until she picks how she wants to appear (first name, full name or a nickname).
  */
-export const APP_NAME = 'Hey Bestie';
+export const APP_NAME = 'Morning Bestie';
 export const HOST_NAME = 'Bestie';
 
 /** What people want her help with; picked in onboarding and used to order the "I need you" moments. */

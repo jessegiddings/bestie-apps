@@ -1,4 +1,4 @@
-# Pep talks (working title "Hey Bestie")
+# Pep talks (working title "Morning Bestie")
 
 A short morning voice note from her, in her real voice, plus "I need you" moments you can tap any time.
 

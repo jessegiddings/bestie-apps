@@ -1,4 +1,4 @@
-# Her scripts: Pep talks (working title "Hey Bestie")
+# Her scripts: Pep talks ("Morning Bestie")
 
 Drafts in a best-friend voice for her to rewrite. Change anything and say it the way she would. Timings assume about 150 words a minute.
 

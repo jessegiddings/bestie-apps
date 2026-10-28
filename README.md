@@ -5,7 +5,7 @@ Three small apps hosted in her voice, sharing one engine.
 | App | Folder | Status | Launch target |
 | --- | --- | --- | --- |
 | Dry & Mighty (dry tracker; name pending her vote) | `apps/dry-tracker` | v1 built, preview at https://dry-tracker-preview.vercel.app | Jan 1, 2027 |
-| Daily pep talks (working title "Hey Bestie") | `apps/pep-talks` | v1 screens built, see its README | week of Feb 8, 2027 |
+| Daily pep talks (working title "Morning Bestie") | `apps/pep-talks` | v1 screens built, see its README | week of Feb 8, 2027 |
 | Party game | `apps/party-game` | not started | April 2027 |
 
 `packages/core` (`@bestie/core`) holds what all three share: the voice player (real recordings only, with captions while a clip isn't recorded yet), streak and date math, the voice-note library (notes tagged by moment, day-N picks, no-repeat rotation, line of the day), purchases (RevenueCat, with a mock mode for testing), and device storage.
