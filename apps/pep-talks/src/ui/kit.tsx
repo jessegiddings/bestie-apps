@@ -84,7 +84,7 @@ export function Charm({ days, name, earned, size = 84 }: { days: number; name: s
         <Path d="M50 4 L50 12" stroke={ring} strokeWidth="3" />
         <Circle cx="50" cy="56" r="40" fill={fill} stroke={ring} strokeWidth="4" />
         <Circle cx="38" cy="40" r="7" fill="#FFFFFF" opacity={earned ? 0.7 : 0.3} />
-        <SvgText x="50" y="66" fontSize="28" fontWeight="700" textAnchor="middle" fill={earned ? colors.ink : colors.faint}>
+        <SvgText x="50" y="66" fontSize="28" fontWeight="700" fontFamily={fonts.bold} textAnchor="middle" fill={earned ? colors.ink : colors.faint}>
           {String(days)}
         </SvgText>
       </Svg>
@@ -106,6 +106,11 @@ export function Bracelet({ thresholds, earned }: { thresholds: readonly number[]
       })}
     </View>
   );
+}
+
+/** Story notes hold a prompt for her, in brackets, until she records her own story. */
+function isPrompt(text: string): boolean {
+  return text.startsWith('[');
 }
 
 /**
@@ -151,8 +156,9 @@ export function VoiceNoteCard({
         ) : null}
       </Row>
       {subtitle ? <H2>{subtitle}</H2> : null}
-      {showing ? <Body style={{ marginTop: space.sm }}>{caption.text}</Body> : null}
-      {showing && captionOnly ? <Body muted style={styles.small}>Her recording is on its way. For now, here are her words.</Body> : null}
+      {showing && !isPrompt(caption.text) ? <Body style={{ marginTop: space.sm }}>{caption.text}</Body> : null}
+      {showing && captionOnly && isPrompt(caption.text) ? <Body style={{ marginTop: space.sm }}>Today she's telling you a story from her own life. It's being recorded now.</Body> : null}
+      {showing && captionOnly && !isPrompt(caption.text) ? <Body muted style={styles.small}>Her recording is on its way. For now, here are her words.</Body> : null}
       {showing && status === 'failed' ? <Body muted style={styles.small}>That didn't play. Tap to try again.</Body> : null}
       <View style={{ marginTop: space.md }}>
         {locked ? (

@@ -1,8 +1,8 @@
 # Her scripts: Pep talks ("Morning Bestie")
 
-Drafts in a best-friend voice for her to rewrite. Change anything and say it the way she would. Timings assume about 150 words a minute.
+Drafts in a best-friend voice for her to rewrite. Change anything and say it the way she would. Story prompts in [brackets] are for her own real stories; keep them to her life, with no show quotes or character names. Timings assume about 150 words a minute.
 
-In total: 30 morning notes, 30 moment talks and 8 charm notes, about 26 minutes of finished audio.
+In total: 60 morning notes, 30 moment talks and 8 charm notes, about 36 minutes of finished audio.
 
 Recording tips: a quiet room with soft furnishings (a closet full of clothes is perfect), phone about 20cm away, Voice Memos is fine. Do two takes of each and keep the warmer one. Export as .m4a and name each file by its id, for example `morning-7.m4a`.
 
@@ -127,6 +127,126 @@ Morning! Okay, let's dream for a second. If nothing could go wrong, what would y
 **Morning 30: A month together** (`morning-30`, ~30s)
 
 One month! A whole month of mornings with me. I'm honestly so happy. Do you know how rare it is for someone to keep a promise to themselves for thirty days? You did that. Whatever else happened this month, the good days and the lousy ones, you kept showing up. That's a charm for your bracelet, and it's a big one. Thank you for letting me be part of your mornings. Let's keep going.
+
+**Morning 31: Hype yourself up** (`morning-31`, ~24s)
+
+Morning, bestie! Today I need you to be your own hype girl. Before you leave the house, look in the mirror and say, out loud, 'Let's go!' Like you're about to walk out to a stadium. Arms up if you want. Your neighbors might hear. Good. Let them wonder what you're about to do, because it's going to be great.
+
+**Morning 32: Story time: my first big day** (`morning-32`, ~21s)
+
+[STORY PROMPT, her real story: a time she was terrified walking into something big, an audition, a first day on set, a table read, and what got her through it. 30 to 45 seconds. End with:] So if you've got a big day coming, remember, I was shaking too. You go in anyway.
+
+**Morning 33: Weird is good** (`morning-33`, ~25s)
+
+Hi! Okay, today's reminder: your weird is your best thing. The laugh that's too loud. The thing you collect. The songs you know every word to that nobody else has heard of. The people who love you, love you because of the weird, not in spite of it. So don't sand yourself down today. Be a little bit extra. It suits you.
+
+**Morning 34: Unfollow day** (`morning-34`, ~23s)
+
+Morning, bestie. Quick spring clean. Open your phone and unfollow three accounts that make you feel bad about yourself. You know the ones. The perfect kitchens, the perfect abs, the perfect everything. You don't owe them your attention. Fill your feed with people who make you laugh and feel good. Your brain will thank you by lunchtime.
+
+**Morning 35: Call your person** (`morning-35`, ~19s)
+
+Hey you. Today, instead of texting, call someone. An actual phone call. I know, terrifying. But hearing a voice you love does something a text never will. Ask them how they really are, and then actually listen. Ten minutes. You'll both hang up feeling better, I promise.
+
+**Morning 36: Celebrate someone else** (`morning-36`, ~23s)
+
+Morning! Today, celebrate someone else's win. Your friend got the job? Send her flowers, or a voice note screaming. Your coworker crushed the presentation? Tell them, and tell their boss. Being genuinely happy for other people is a superpower, and it makes the world feel a lot less like a competition. There's enough good stuff for everyone.
+
+**Morning 37: Six weeks** (`morning-37`, ~21s)
+
+Six weeks of mornings! Do you realize you've been doing this longer than most New Year's resolutions last? I'm serious. Most of those are gone by February. And here you are, still pressing play. That's who you are now. Someone who keeps her promises to herself. I'm really proud of you, bestie.
+
+**Morning 38: Feel your feelings** (`morning-38`, ~24s)
+
+Hi, bestie. If something's bugging you today, don't push it down. Feelings are like beach balls. You can hold them under the water for a while, but eventually they pop up and smack you in the face. So feel it. Cry in the car if you need to. Then wipe your face, put on your sunglasses, and carry on. Very glamorous.
+
+**Morning 39: Plan something fun** (`morning-39`, ~24s)
+
+Morning! When's the last time you had something fun on the calendar? Something just for you? Not a work thing, not an obligation. Today, plan one thing to look forward to. Dinner with a friend, a movie, a hike, a day trip. Having something to look forward to is half the fun. Put it in your calendar right now.
+
+**Morning 40: The apology** (`morning-40`, ~21s)
+
+Hey you. Is there someone you owe an apology to? Or someone you're waiting on an apology from? Here's a thought: you can go first. Not because you were wrong, necessarily, but because the friendship matters more than being right. A simple 'I'm sorry, I miss you' fixes more than you'd think.
+
+**Morning 41: Main character energy** (`morning-41`, ~21s)
+
+Good morning, bestie! Today you're the main character. Put on your headphones, pick a soundtrack, and walk to wherever you're going like you're in the opening scene of a movie. Slow motion optional. Hair flip encouraged. Life is a lot more fun when you treat it like the good part of the film.
+
+**Morning 42: Your body is not a project** (`morning-42`, ~24s)
+
+Morning, you. A little reminder: your body is not a before picture. It's not a project you have to finish before you're allowed to enjoy your life. It carries you around, it hugs the people you love, it dances badly in the kitchen. Be nice to it today. Feed it something good, move it a little, and say thank you.
+
+**Morning 43: Boundaries are love** (`morning-43`, ~23s)
+
+Hi, bestie. Today let's talk boundaries. A boundary isn't a wall to keep people out. It's a gate that tells people how to come in. 'I don't answer work emails after seven.' 'I need a heads-up before you come over.' People who love you will respect them. And the ones who don't? Well, that's useful information too.
+
+**Morning 44: Story time: a friend who showed up** (`morning-44`, ~18s)
+
+[STORY PROMPT, her real story: a friend who showed up for her when she needed it, on set or off, and what they did. 30 to 45 seconds. End with:] Be that friend for someone this week. And let someone be that friend for you.
+
+**Morning 45: Fifty mornings soon** (`morning-45`, ~20s)
+
+Morning! We're getting close to fifty mornings together, and honestly, I'm a little emotional about it. You know what I've noticed? You're the kind of person who keeps going. Even when it's boring, even when life gets loud. That's a rare thing, and I hope you know how much it counts.
+
+**Morning 46: Try something new** (`morning-46`, ~21s)
+
+Hey bestie! Today, try one new thing. A new coffee order, a new route to work, a new recipe, a new song. Tiny new things wake your brain up. We get so stuck in the same loop that the days blur together. So break the loop a little. Report back on the coffee.
+
+**Morning 47: Let it be easy** (`morning-47`, ~20s)
+
+Hi, you. What if today was easy? What if you didn't have to make it hard? Sometimes we make things complicated because we think hard means worthy. It doesn't. Take the shortcut. Ask for help. Order the takeout. Let something be easy today. You don't get extra points for suffering.
+
+**Morning 48: Fifty and fabulous** (`morning-48`, ~21s)
+
+Fifty mornings! Fifty! Okay, I'm officially throwing you a party. In my head. There's cake. Seriously though, fifty mornings is a real thing, and you did it one ordinary day at a time. There's a new charm on your bracelet, and I hope you're as proud of yourself as I am of you.
+
+**Morning 49: Nobody's thinking about it** (`morning-49`, ~17s)
+
+Morning, bestie. That embarrassing thing you said last week? The one you replayed in the shower? Nobody's thinking about it. Truly. Everyone's way too busy replaying their own embarrassing thing. So you can let it go. You're free. Go be gloriously awkward today.
+
+**Morning 50: Help someone** (`morning-50`, ~22s)
+
+Hey you. Today, help someone with no reason. Hold the door, carry the bag, let someone go ahead in line, leave a nice note. Helping someone else is the fastest way out of your own head. And it's sneaky: they feel good, you feel good, and the whole day gets a little bit kinder.
+
+**Morning 51: Story time: the worst day on set** (`morning-51`, ~19s)
+
+[STORY PROMPT, her real story: a day at work that went completely wrong, a blooper, a mistake, a disaster, and how she laughed about it later. 30 to 45 seconds. End with:] So if today goes sideways, give it a few weeks. It'll be your favorite story.
+
+**Morning 52: You're a good friend** (`morning-52`, ~20s)
+
+Morning! I want to tell you something you probably don't hear enough: you're a good friend. You remember things. You show up. You care, even when you're tired. The people in your life are lucky to have you. And today, I hope someone tells you that. If not, I just did.
+
+**Morning 53: Phone-free hour** (`morning-53`, ~21s)
+
+Hi, bestie! Challenge for today: one hour with no phone. Put it in a drawer, in another room, anywhere you can't reach it. Read, cook, walk, stare at a wall. At first it'll feel weird, like you've lost an arm. Then it feels like a vacation. One hour. You can do it.
+
+**Morning 54: You're allowed to want more** (`morning-54`, ~21s)
+
+Hey you. It's okay to want more. More money, more love, more adventure, more rest. Wanting more doesn't make you ungrateful. You can love your life and still want to grow. So today, write down one thing you want more of. Just name it. Wants you name are wants you can chase.
+
+**Morning 55: Breakfast is a love language** (`morning-55`, ~19s)
+
+Morning! Did you eat breakfast? Real breakfast, not three sips of coffee in the car? Go eat something. Eggs, toast, fruit, cereal, leftover pizza, I'm not the breakfast police. You can't pour from an empty cup, and you definitely can't pour from an empty stomach. I'll wait.
+
+**Morning 56: Be the friend you need** (`morning-56`, ~20s)
+
+Hi, bestie. Think about what you needed to hear last time you were having a hard time. Got it? Now find someone in your life who might need to hear that today, and tell them. The things we needed most are usually the things someone else needs right now too.
+
+**Morning 57: Story time: what friendship taught me** (`morning-57`, ~15s)
+
+[STORY PROMPT, her real story: something a long friendship taught her, about forgiveness, showing up, growing apart and back together. 30 to 45 seconds. End with:] Your people are the whole point. Go tell one of them.
+
+**Morning 58: Joy is productive** (`morning-58`, ~20s)
+
+Morning, bestie! Today, do something just because it's fun. Not because it's good for you, or productive, or for your goals. Just fun. Color, swing on a swing, watch cartoons, bake cookies, sing badly. Joy isn't a waste of time. It's the reason we're doing all the rest of it.
+
+**Morning 59: Almost two months** (`morning-59`, ~21s)
+
+Hey you. Almost two months of mornings together. I want you to look back at the first week. Remember how new this felt? Now it's just part of your day. That's how change actually happens, not with a big dramatic moment, but with lots of small mornings like this one. You're doing it.
+
+**Morning 60: Two months of us** (`morning-60`, ~21s)
+
+Two months! Sixty mornings with me. I'm genuinely so grateful you let me be part of your days. Every single morning, you chose to start with a little kindness, and that adds up. Here's to the next sixty. I'll be right here, every morning, cheering you on like always. Love you, bestie.
 
 ## "I need you" moments (three talks each, the first one free)
 
@@ -366,4 +486,64 @@ A whole year. Three hundred and sixty-five mornings. You and me. Thank you for l
 58. Slow down. Nothing good is in a hurry.
 59. Choose the thing future you will thank you for.
 60. I’m in your corner. Always.
+61. Hype yourself up. Arms optional.
+62. Your weird is your best feature.
+63. Unfollow anything that makes you feel small.
+64. Call someone. With your actual voice.
+65. Someone else’s win doesn’t cancel yours.
+66. Feelings are beach balls. Let them up.
+67. Put something fun on the calendar.
+68. You can go first with the sorry.
+69. Walk like it’s the opening scene.
+70. Your body is not a before picture.
+71. A boundary is a gate, not a wall.
+72. Try one new thing. Even a new coffee.
+73. Let it be easy today.
+74. Nobody is thinking about that thing you said.
+75. Hold the door. Change someone’s day.
+76. Today’s disaster is next month’s best story.
+77. You’re a good friend. Someone should say it.
+78. One hour, no phone. You’ll live.
+79. Wanting more isn’t ungrateful.
+80. Eat breakfast. I’m not asking.
+81. Say the thing you needed to hear to someone else.
+82. Joy is not a waste of time.
+83. Small mornings make big changes.
+84. Be dramatic about the good stuff.
+85. Snacks count as self-care.
+86. You’re not too old, too late or too much.
+87. Cry if you need to. Then sunglasses.
+88. Being kind is cooler than being cool.
+89. Leave the group chat on read. Go outside.
+90. You don’t have to earn a nap.
+91. Your best friend thinks you’re amazing. Hi.
+92. Romanticize the grocery run.
+93. Text back the person who always texts first.
+94. Today, choose curious over furious.
+95. It’s okay to outgrow things.
+96. Treat yourself like someone you love.
+97. Let people be wrong about you.
+98. Mess up loudly. Learn quickly.
+99. You can start over at 3 p.m. on a Wednesday.
+100. Comparison is a thief with good lighting.
+101. Somebody is grateful you exist.
+102. Your soft heart is a strength.
+103. Fake it till you dance in the kitchen.
+104. Sing in the car like it’s your encore.
+105. Pick the person, not the phone.
+106. Stop apologizing for taking up time.
+107. Make the plan. Then make the call.
+108. A walk fixes more than you think.
+109. Be honest. Be kind. Be on time-ish.
+110. Your inner child wants a juice box and a win.
+111. Say yes to the thing that scares you a little.
+112. Say no to the thing that drains you a lot.
+113. The vibe today: unbothered and hydrated.
+114. You were made for good things.
+115. Laugh at yourself first. It’s free.
+116. Nothing about you needs fixing before you’re loved.
+117. Be the friend who shows up with snacks.
+118. Small brave things still count as brave.
+119. Today’s outfit: confidence. Pants also recommended.
+120. Bestie, you’ve got this. I checked.
 

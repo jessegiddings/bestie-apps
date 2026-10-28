@@ -5,7 +5,8 @@ import { FREE_MORNINGS } from './brand';
  * Morning notes, 30 to 45 seconds each read aloud, played in order from the day someone joins.
  * DRAFTS in her voice for her to rewrite freely before recording; say them the way she would.
  * `asset` stays null until the recording exists, and the app shows the words meanwhile.
- * After the last one, the cycle restarts at day 2 so nobody hears the welcome twice.
+ * Notes marked [STORY PROMPT] are hers to fill with a real story of her own (no show quotes or
+ * character names). After the last one, the cycle restarts at day 2 so nobody hears the welcome twice.
  */
 const MORNINGS: { title: string; text: string }[] = [
   {
@@ -127,6 +128,126 @@ const MORNINGS: { title: string; text: string }[] = [
   {
     title: 'A month together',
     text: "One month! A whole month of mornings with me. I'm honestly so happy. Do you know how rare it is for someone to keep a promise to themselves for thirty days? You did that. Whatever else happened this month, the good days and the lousy ones, you kept showing up. That's a charm for your bracelet, and it's a big one. Thank you for letting me be part of your mornings. Let's keep going.",
+  },
+  {
+    title: "Hype yourself up",
+    text: "Morning, bestie! Today I need you to be your own hype girl. Before you leave the house, look in the mirror and say, out loud, 'Let's go!' Like you're about to walk out to a stadium. Arms up if you want. Your neighbors might hear. Good. Let them wonder what you're about to do, because it's going to be great.",
+  },
+  {
+    title: "Story time: my first big day",
+    text: "[STORY PROMPT, her real story: a time she was terrified walking into something big, an audition, a first day on set, a table read, and what got her through it. 30 to 45 seconds. End with:] So if you've got a big day coming, remember, I was shaking too. You go in anyway.",
+  },
+  {
+    title: "Weird is good",
+    text: "Hi! Okay, today's reminder: your weird is your best thing. The laugh that's too loud. The thing you collect. The songs you know every word to that nobody else has heard of. The people who love you, love you because of the weird, not in spite of it. So don't sand yourself down today. Be a little bit extra. It suits you.",
+  },
+  {
+    title: "Unfollow day",
+    text: "Morning, bestie. Quick spring clean. Open your phone and unfollow three accounts that make you feel bad about yourself. You know the ones. The perfect kitchens, the perfect abs, the perfect everything. You don't owe them your attention. Fill your feed with people who make you laugh and feel good. Your brain will thank you by lunchtime.",
+  },
+  {
+    title: "Call your person",
+    text: "Hey you. Today, instead of texting, call someone. An actual phone call. I know, terrifying. But hearing a voice you love does something a text never will. Ask them how they really are, and then actually listen. Ten minutes. You'll both hang up feeling better, I promise.",
+  },
+  {
+    title: "Celebrate someone else",
+    text: "Morning! Today, celebrate someone else's win. Your friend got the job? Send her flowers, or a voice note screaming. Your coworker crushed the presentation? Tell them, and tell their boss. Being genuinely happy for other people is a superpower, and it makes the world feel a lot less like a competition. There's enough good stuff for everyone.",
+  },
+  {
+    title: "Six weeks",
+    text: "Six weeks of mornings! Do you realize you've been doing this longer than most New Year's resolutions last? I'm serious. Most of those are gone by February. And here you are, still pressing play. That's who you are now. Someone who keeps her promises to herself. I'm really proud of you, bestie.",
+  },
+  {
+    title: "Feel your feelings",
+    text: "Hi, bestie. If something's bugging you today, don't push it down. Feelings are like beach balls. You can hold them under the water for a while, but eventually they pop up and smack you in the face. So feel it. Cry in the car if you need to. Then wipe your face, put on your sunglasses, and carry on. Very glamorous.",
+  },
+  {
+    title: "Plan something fun",
+    text: "Morning! When's the last time you had something fun on the calendar? Something just for you? Not a work thing, not an obligation. Today, plan one thing to look forward to. Dinner with a friend, a movie, a hike, a day trip. Having something to look forward to is half the fun. Put it in your calendar right now.",
+  },
+  {
+    title: "The apology",
+    text: "Hey you. Is there someone you owe an apology to? Or someone you're waiting on an apology from? Here's a thought: you can go first. Not because you were wrong, necessarily, but because the friendship matters more than being right. A simple 'I'm sorry, I miss you' fixes more than you'd think.",
+  },
+  {
+    title: "Main character energy",
+    text: "Good morning, bestie! Today you're the main character. Put on your headphones, pick a soundtrack, and walk to wherever you're going like you're in the opening scene of a movie. Slow motion optional. Hair flip encouraged. Life is a lot more fun when you treat it like the good part of the film.",
+  },
+  {
+    title: "Your body is not a project",
+    text: "Morning, you. A little reminder: your body is not a before picture. It's not a project you have to finish before you're allowed to enjoy your life. It carries you around, it hugs the people you love, it dances badly in the kitchen. Be nice to it today. Feed it something good, move it a little, and say thank you.",
+  },
+  {
+    title: "Boundaries are love",
+    text: "Hi, bestie. Today let's talk boundaries. A boundary isn't a wall to keep people out. It's a gate that tells people how to come in. 'I don't answer work emails after seven.' 'I need a heads-up before you come over.' People who love you will respect them. And the ones who don't? Well, that's useful information too.",
+  },
+  {
+    title: "Story time: a friend who showed up",
+    text: "[STORY PROMPT, her real story: a friend who showed up for her when she needed it, on set or off, and what they did. 30 to 45 seconds. End with:] Be that friend for someone this week. And let someone be that friend for you.",
+  },
+  {
+    title: "Fifty mornings soon",
+    text: "Morning! We're getting close to fifty mornings together, and honestly, I'm a little emotional about it. You know what I've noticed? You're the kind of person who keeps going. Even when it's boring, even when life gets loud. That's a rare thing, and I hope you know how much it counts.",
+  },
+  {
+    title: "Try something new",
+    text: "Hey bestie! Today, try one new thing. A new coffee order, a new route to work, a new recipe, a new song. Tiny new things wake your brain up. We get so stuck in the same loop that the days blur together. So break the loop a little. Report back on the coffee.",
+  },
+  {
+    title: "Let it be easy",
+    text: "Hi, you. What if today was easy? What if you didn't have to make it hard? Sometimes we make things complicated because we think hard means worthy. It doesn't. Take the shortcut. Ask for help. Order the takeout. Let something be easy today. You don't get extra points for suffering.",
+  },
+  {
+    title: "Fifty and fabulous",
+    text: "Fifty mornings! Fifty! Okay, I'm officially throwing you a party. In my head. There's cake. Seriously though, fifty mornings is a real thing, and you did it one ordinary day at a time. There's a new charm on your bracelet, and I hope you're as proud of yourself as I am of you.",
+  },
+  {
+    title: "Nobody's thinking about it",
+    text: "Morning, bestie. That embarrassing thing you said last week? The one you replayed in the shower? Nobody's thinking about it. Truly. Everyone's way too busy replaying their own embarrassing thing. So you can let it go. You're free. Go be gloriously awkward today.",
+  },
+  {
+    title: "Help someone",
+    text: "Hey you. Today, help someone with no reason. Hold the door, carry the bag, let someone go ahead in line, leave a nice note. Helping someone else is the fastest way out of your own head. And it's sneaky: they feel good, you feel good, and the whole day gets a little bit kinder.",
+  },
+  {
+    title: "Story time: the worst day on set",
+    text: "[STORY PROMPT, her real story: a day at work that went completely wrong, a blooper, a mistake, a disaster, and how she laughed about it later. 30 to 45 seconds. End with:] So if today goes sideways, give it a few weeks. It'll be your favorite story.",
+  },
+  {
+    title: "You're a good friend",
+    text: "Morning! I want to tell you something you probably don't hear enough: you're a good friend. You remember things. You show up. You care, even when you're tired. The people in your life are lucky to have you. And today, I hope someone tells you that. If not, I just did.",
+  },
+  {
+    title: "Phone-free hour",
+    text: "Hi, bestie! Challenge for today: one hour with no phone. Put it in a drawer, in another room, anywhere you can't reach it. Read, cook, walk, stare at a wall. At first it'll feel weird, like you've lost an arm. Then it feels like a vacation. One hour. You can do it.",
+  },
+  {
+    title: "You're allowed to want more",
+    text: "Hey you. It's okay to want more. More money, more love, more adventure, more rest. Wanting more doesn't make you ungrateful. You can love your life and still want to grow. So today, write down one thing you want more of. Just name it. Wants you name are wants you can chase.",
+  },
+  {
+    title: "Breakfast is a love language",
+    text: "Morning! Did you eat breakfast? Real breakfast, not three sips of coffee in the car? Go eat something. Eggs, toast, fruit, cereal, leftover pizza, I'm not the breakfast police. You can't pour from an empty cup, and you definitely can't pour from an empty stomach. I'll wait.",
+  },
+  {
+    title: "Be the friend you need",
+    text: "Hi, bestie. Think about what you needed to hear last time you were having a hard time. Got it? Now find someone in your life who might need to hear that today, and tell them. The things we needed most are usually the things someone else needs right now too.",
+  },
+  {
+    title: "Story time: what friendship taught me",
+    text: "[STORY PROMPT, her real story: something a long friendship taught her, about forgiveness, showing up, growing apart and back together. 30 to 45 seconds. End with:] Your people are the whole point. Go tell one of them.",
+  },
+  {
+    title: "Joy is productive",
+    text: "Morning, bestie! Today, do something just because it's fun. Not because it's good for you, or productive, or for your goals. Just fun. Color, swing on a swing, watch cartoons, bake cookies, sing badly. Joy isn't a waste of time. It's the reason we're doing all the rest of it.",
+  },
+  {
+    title: "Almost two months",
+    text: "Hey you. Almost two months of mornings together. I want you to look back at the first week. Remember how new this felt? Now it's just part of your day. That's how change actually happens, not with a big dramatic moment, but with lots of small mornings like this one. You're doing it.",
+  },
+  {
+    title: "Two months of us",
+    text: "Two months! Sixty mornings with me. I'm genuinely so grateful you let me be part of your days. Every single morning, you chose to start with a little kindness, and that adds up. Here's to the next sixty. I'll be right here, every morning, cheering you on like always. Love you, bestie.",
   },
 ];
 
