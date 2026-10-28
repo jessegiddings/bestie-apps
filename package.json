@@ -1,0 +1,54 @@
+{
+  "name": "bestie-apps",
+  "private": true,
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "test": "jest",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "dry": "npm run start --workspace dry-tracker"
+  },
+  "jest": {
+    "projects": [
+      {
+        "displayName": "core",
+        "preset": "jest-expo",
+        "rootDir": "packages/core",
+        "testMatch": [
+          "<rootDir>/src/**/*.test.ts"
+        ],
+        "transformIgnorePatterns": [
+          "node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|react-navigation|@react-navigation/.*|zustand)"
+        ],
+        "setupFiles": [
+          "<rootDir>/../../jest.setup.js"
+        ]
+      },
+      {
+        "displayName": "dry-tracker",
+        "preset": "jest-expo",
+        "rootDir": "apps/dry-tracker",
+        "testMatch": [
+          "<rootDir>/src/**/*.test.ts"
+        ],
+        "transformIgnorePatterns": [
+          "node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|react-navigation|@react-navigation/.*|zustand)"
+        ],
+        "setupFiles": [
+          "<rootDir>/../../jest.setup.js"
+        ],
+        "moduleNameMapper": {
+          "^@/(.*)$": "<rootDir>/src/$1"
+        }
+      }
+    ]
+  },
+  "devDependencies": {
+    "@types/jest": "^30.0.0",
+    "jest": "^30.0.0",
+    "jest-expo": "^58.0.11",
+    "typescript": "~6.0.3"
+  }
+}
