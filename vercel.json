@@ -1,5 +1,5 @@
 {
-  "installCommand": "npm install",
+  "installCommand": "npm ci --no-audit --no-fund",
   "buildCommand": "cd apps/dry-tracker && npx expo export --platform web --output-dir dist",
   "outputDirectory": "apps/dry-tracker/dist",
   "framework": null,
