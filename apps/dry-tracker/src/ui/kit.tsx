@@ -1,9 +1,9 @@
-import { play, replay, useVoice } from '@bestie/core';
+import { play, cancel, useVoice } from '@bestie/core';
 import { router } from 'expo-router';
 import { useId, type ReactNode } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View, type StyleProp, type TextStyle, type ViewStyle } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import Svg, { Circle, Defs, G, LinearGradient, Path, Polygon, Rect, Stop, Text as SvgText } from 'react-native-svg';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import Svg, { Circle, Defs, G, LinearGradient, Path, Stop, Text as SvgText } from 'react-native-svg';
 import { HOST_NAME } from '@/content/brand';
 import type { Badge, BadgeIcon, Tier } from '@/state/badges';
 import { colors, fonts, glows, radius, space, TOUCH_MIN } from './theme';
@@ -19,42 +19,23 @@ export function Screen({ children, scroll = true, tab }: { children: ReactNode; 
   const body = <View style={[styles.screenInner, tab ? { paddingBottom: 120 } : null]}>{children}</View>;
   return (
     <SafeAreaView style={styles.screen} edges={['top', 'left', 'right']}>
-      <Glow />
-      {scroll ? <ScrollView contentContainerStyle={styles.scroll}>{body}</ScrollView> : body}
+      {scroll ? <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={styles.scroll}>{body}</ScrollView> : body}
       {tab ? <TabBar active={tab} /> : null}
     </SafeAreaView>
   );
 }
 
-/** A soft dusk glow at the top of every screen. */
-function Glow() {
-  const id = useSvgId('g');
-  return (
-    <View pointerEvents="none" style={StyleSheet.absoluteFill}>
-      <Svg width="100%" height={420}>
-        <Defs>
-          <LinearGradient id={id} x1="0" y1="0" x2="0" y2="1">
-            <Stop offset="0" stopColor={colors.lilac} stopOpacity={0.22} />
-            <Stop offset="0.55" stopColor={colors.accent} stopOpacity={0.06} />
-            <Stop offset="1" stopColor={colors.ground} stopOpacity={0} />
-          </LinearGradient>
-        </Defs>
-        <Rect x="0" y="0" width="100%" height={420} fill={`url(#${id})`} />
-      </Svg>
-    </View>
-  );
-}
-
 const TABS: { tab: Tab; label: string; href: string; icon: IconName }[] = [
-  { tab: 'today', label: 'Tonight', href: '/', icon: 'sun' },
+  { tab: 'today', label: 'Today', href: '/', icon: 'sun' },
   { tab: 'journey', label: 'Journey', href: '/journey', icon: 'chart' },
   { tab: 'badges', label: 'Badges', href: '/badges', icon: 'star' },
   { tab: 'buddy', label: 'Buddy', href: '/buddy', icon: 'people' },
 ];
 
 export function TabBar({ active }: { active: Tab }) {
+  const insets = useSafeAreaInsets();
   return (
-    <View style={styles.tabWrap} pointerEvents="box-none">
+    <View style={[styles.tabWrap, { paddingBottom: Math.max(insets.bottom, 12) }]} pointerEvents="box-none">
       <View style={styles.tabBar}>
         {TABS.map((t) => {
           const on = t.tab === active;
@@ -67,8 +48,8 @@ export function TabBar({ active }: { active: Tab }) {
               onPress={() => !on && router.navigate(t.href as never)}
               style={[styles.tabItem, on && styles.tabItemOn]}
             >
-              <Icon name={t.icon} size={20} color={on ? colors.accentInk : colors.muted} />
-              <Text style={[styles.tabLabel, { color: on ? colors.accentInk : colors.muted }]}>{t.label}</Text>
+              <Icon name={t.icon} size={20} color={on ? colors.accent : colors.muted} />
+              <Text style={[styles.tabLabel, { color: on ? colors.accent : colors.muted }]}>{t.label}</Text>
             </Pressable>
           );
         })}
@@ -141,26 +122,8 @@ export function Button({
 
 export function Card({ children, tint, style, glow }: { children: ReactNode; tint?: string; style?: StyleProp<ViewStyle>; glow?: keyof typeof glows }) {
   return (
-    <View style={[styles.card, tint ? { backgroundColor: tint, borderColor: tint } : null, style]}>
-      {glow ? <CardGlow colors={glows[glow]} /> : null}
+    <View style={[styles.card, glow ? { backgroundColor: glows[glow][0] } : null, tint ? { backgroundColor: tint, borderColor: tint } : null, style]}>
       {children}
-    </View>
-  );
-}
-
-function CardGlow({ colors: [a, b] }: { colors: readonly [string, string] }) {
-  const id = useSvgId('c');
-  return (
-    <View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: radius.md, overflow: 'hidden' }]}>
-      <Svg width="100%" height="100%">
-        <Defs>
-          <LinearGradient id={id} x1="0" y1="0" x2="1" y2="1">
-            <Stop offset="0" stopColor={a} stopOpacity={0.28} />
-            <Stop offset="1" stopColor={b} stopOpacity={0.08} />
-          </LinearGradient>
-        </Defs>
-        <Rect x="0" y="0" width="100%" height="100%" fill={`url(#${id})`} />
-      </Svg>
     </View>
   );
 }
@@ -186,8 +149,8 @@ export function Stat({ value, label, color }: { value: string; label: string; co
   );
 }
 
-/** The progress ring on Tonight: a dusk gradient arc around the day count. */
-export function Ring({ progress, size = 220, stroke = 16, children }: { progress: number; size?: number; stroke?: number; children?: ReactNode }) {
+/** A quiet progress ring. */
+export function Ring({ progress, size = 200, stroke = 5, children }: { progress: number; size?: number; stroke?: number; children?: ReactNode }) {
   const id = useSvgId('r');
   const r = (size - stroke) / 2;
   const c = 2 * Math.PI * r;
@@ -207,7 +170,7 @@ export function Ring({ progress, size = 220, stroke = 16, children }: { progress
             cx={size / 2}
             cy={size / 2}
             r={r}
-            stroke={`url(#${id})`}
+            stroke={colors.accent}
             strokeWidth={stroke}
             strokeLinecap="round"
             fill="none"
@@ -260,80 +223,18 @@ export function Icon({ name, size = 22, color = colors.ink, strokeWidth = 2 }: {
   );
 }
 
-const TIER_GRADIENT: Record<Tier, readonly string[]> = {
-  bronze: ['#FFD2AE', '#E08A5A', '#9C4F2C'],
-  silver: ['#FFFFFF', '#C9C5DE', '#8C87AA'],
-  gold: ['#FFF0B5', '#F3C969', '#C98A23'],
-  holo: ['#9BF0D6', '#B9A5FF', '#F7B58F'],
-};
-
 export const TIER_LABEL: Record<Tier, string> = { bronze: 'Bronze', silver: 'Silver', gold: 'Gold', holo: 'Holo' };
 
-/** Polygon points for a regular n-gon or a star, centred in a 100 box. */
-function shape(n: number, r: number, inner?: number, rot = -90): string {
-  const pts: string[] = [];
-  const count = inner ? n * 2 : n;
-  for (let i = 0; i < count; i++) {
-    const rad = inner && i % 2 ? inner : r;
-    const a = ((rot + (360 / count) * i) * Math.PI) / 180;
-    pts.push(`${(50 + rad * Math.cos(a)).toFixed(2)},${(50 + rad * Math.sin(a)).toFixed(2)}`);
-  }
-  return pts.join(' ');
-}
-
-const TIER_SHAPE: Record<Tier, { outer: string; inner: string } | null> = {
-  bronze: null,
-  silver: { outer: shape(6, 47), inner: shape(6, 38) },
-  gold: { outer: shape(12, 48, 42), inner: shape(12, 38, 34) },
-  holo: { outer: shape(8, 48, 40, -67.5), inner: shape(8, 38, 33, -67.5) },
-};
-
-/**
- * A collectible badge. Each tier has its own shape and finish: bronze medallion, silver hexagon,
- * gold sunburst, holo star. Locked badges show as an outline so there is always a next one to want.
- */
 export function BadgeArt({ badge, earned, size = 96 }: { badge: Badge; earned: boolean; size?: number }) {
-  const id = useSvgId('b');
-  const shine = useSvgId('s');
-  const [a, b, c] = TIER_GRADIENT[badge.tier];
-  const tierShape = TIER_SHAPE[badge.tier];
-  const fill = earned ? `url(#${id})` : colors.raised;
-  const stroke = earned ? 'rgba(255,255,255,0.55)' : colors.line;
-  const iconColor = earned ? '#2A1B10' : colors.faint;
+  const tone = earned ? colors.accent : colors.faint;
   return (
     <Svg width={size} height={size} viewBox="0 0 100 100">
-      <Defs>
-        <LinearGradient id={id} x1="0" y1="0" x2="1" y2="1">
-          <Stop offset="0" stopColor={a} />
-          <Stop offset="0.55" stopColor={b} />
-          <Stop offset="1" stopColor={c} />
-        </LinearGradient>
-        <LinearGradient id={shine} x1="0" y1="0" x2="0" y2="1">
-          <Stop offset="0" stopColor="#FFFFFF" stopOpacity={0.55} />
-          <Stop offset="0.5" stopColor="#FFFFFF" stopOpacity={0} />
-        </LinearGradient>
-      </Defs>
-      {tierShape ? (
-        <>
-          <Polygon points={tierShape.outer} fill={fill} stroke={stroke} strokeWidth={1.5} strokeDasharray={earned ? undefined : '4 4'} />
-          <Polygon points={tierShape.inner} fill="none" stroke={earned ? 'rgba(42,27,16,0.35)' : colors.line} strokeWidth={1.5} />
-          {earned ? <Polygon points={tierShape.outer} fill={`url(#${shine})`} /> : null}
-        </>
-      ) : (
-        <>
-          <Circle cx="50" cy="50" r="46" fill={fill} stroke={stroke} strokeWidth={1.5} strokeDasharray={earned ? undefined : '4 4'} />
-          <Circle cx="50" cy="50" r="37" fill="none" stroke={earned ? 'rgba(42,27,16,0.35)' : colors.line} strokeWidth={1.5} strokeDasharray="3 3" />
-          {earned ? <Circle cx="50" cy="50" r="46" fill={`url(#${shine})`} /> : null}
-        </>
-      )}
+      <Circle cx="50" cy="50" r="46" fill={earned ? colors.accentSoft : colors.ground} stroke={earned ? colors.accent : colors.line} strokeWidth="1" />
+      <Circle cx="50" cy="50" r="38" fill="none" stroke={earned ? '#C0CDBB' : colors.line} strokeWidth="1" />
       <G transform={badge.days ? 'translate(35 22) scale(1.25)' : 'translate(29 29) scale(1.75)'}>
-        <Path d={ICONS[earned ? badge.icon : 'lock'].d} stroke={iconColor} strokeWidth={2} fill="none" strokeLinecap="round" strokeLinejoin="round" />
+        <Path d={ICONS[earned ? badge.icon : 'lock'].d} stroke={tone} strokeWidth={1.5} fill="none" strokeLinecap="round" strokeLinejoin="round" />
       </G>
-      {badge.days ? (
-        <SvgText x="50" y="78" fontSize="22" fontWeight="700" textAnchor="middle" fill={iconColor} fontFamily={fonts.display}>
-          {String(badge.days)}
-        </SvgText>
-      ) : null}
+      {badge.days ? <SvgText x="50" y="78" fontSize="22" textAnchor="middle" fill={tone}>{String(badge.days)}</SvgText> : null}
     </Svg>
   );
 }
@@ -372,9 +273,8 @@ export function VoiceNote({ clipId, title, locked, onLocked, onPlayed }: { clipI
   const playing = showing && status === 'playing';
   const press = () => {
     if (locked) return onLocked?.();
-    if (showing) replay();
-    else play(clipId, { interrupt: true });
-    onPlayed?.();
+    if (playing) cancel();
+    else play(clipId, { interrupt: true, onComplete: onPlayed });
   };
   return (
     <Card glow="dusk">
@@ -382,7 +282,7 @@ export function VoiceNote({ clipId, title, locked, onLocked, onPlayed }: { clipI
       <Row gap={space.md} style={{ marginTop: space.md }}>
         <Pressable
           accessibilityRole="button"
-          accessibilityLabel={locked ? 'Unlock her voice notes' : playing ? 'Playing' : showing ? 'Play again' : 'Play'}
+          accessibilityLabel={locked ? 'Unlock her voice notes' : playing ? 'Stop playback' : showing ? 'Play again' : 'Play'}
           onPress={press}
           style={styles.playBtn}
         >
@@ -402,7 +302,7 @@ export function VoiceNote({ clipId, title, locked, onLocked, onPlayed }: { clipI
       {showing ? <Body style={{ marginTop: space.md }}>{caption.text}</Body> : null}
       {showing && captionOnly ? (
         <Body muted style={styles.small}>
-          Her recording is on its way. For now, here are her words.
+          Script preview · Hannah’s recording hasn’t been added yet.
         </Body>
       ) : null}
       {showing && status === 'failed' ? (
@@ -417,7 +317,7 @@ export function VoiceNote({ clipId, title, locked, onLocked, onPlayed }: { clipI
 export const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.ground },
   scroll: { flexGrow: 1 },
-  screenInner: { paddingHorizontal: space.lg + 4, paddingVertical: space.xl, gap: space.lg, maxWidth: 560, width: '100%', alignSelf: 'center' },
+  screenInner: { paddingHorizontal: space.lg + 4, paddingVertical: space.xl, gap: space.xl, maxWidth: 560, width: '100%', alignSelf: 'center' },
   h1: { fontFamily: fonts.display, fontSize: 34, lineHeight: 40, color: colors.ink, letterSpacing: -0.5 },
   h2: { fontFamily: fonts.display, fontSize: 22, lineHeight: 28, color: colors.ink },
   body: { fontFamily: fonts.body, fontSize: 16, lineHeight: 24, color: colors.ink },
@@ -450,22 +350,23 @@ export const styles = StyleSheet.create({
   statValue: { fontFamily: fonts.display, fontSize: 28, color: colors.ink, fontVariant: ['tabular-nums'] },
   statLabel: { fontFamily: fonts.body, fontSize: 13, color: colors.muted },
   playBtn: { width: 56, height: 56, borderRadius: 28, backgroundColor: colors.accent, alignItems: 'center', justifyContent: 'center' },
-  tabWrap: { position: 'absolute', left: 0, right: 0, bottom: 20, alignItems: 'center' },
+  tabWrap: { position: 'absolute', left: 0, right: 0, bottom: 0, alignItems: 'center', backgroundColor: colors.ground, borderTopWidth: 1, borderColor: colors.line, paddingTop: 8 },
   tabBar: {
     flexDirection: 'row',
+    width: '100%', maxWidth: 520,
     gap: 4,
     padding: 6,
-    borderRadius: radius.pill,
-    backgroundColor: 'rgba(35,31,52,0.94)',
-    borderWidth: 1,
+    borderRadius: 0,
+    backgroundColor: colors.ground,
+    borderWidth: 0,
     borderColor: colors.line,
     shadowColor: '#000',
-    shadowOpacity: 0.4,
+    shadowOpacity: 0,
     shadowRadius: 20,
     shadowOffset: { width: 0, height: 8 },
   },
-  tabItem: { minHeight: 52, minWidth: 74, paddingHorizontal: 10, borderRadius: radius.pill, alignItems: 'center', justifyContent: 'center', gap: 2 },
-  tabItemOn: { backgroundColor: colors.accent },
+  tabItem: { minHeight: 52, flex: 1, minWidth: 0, paddingHorizontal: 8, borderRadius: radius.pill, alignItems: 'center', justifyContent: 'center', gap: 2 },
+  tabItemOn: { backgroundColor: colors.accentSoft },
   tabLabel: { fontFamily: fonts.bold, fontSize: 11 },
   badgeTile: { width: '31%', alignItems: 'center', gap: 4, paddingVertical: space.sm },
   badgeName: { fontFamily: fonts.bold, fontSize: 13, color: colors.ink, textAlign: 'center' },

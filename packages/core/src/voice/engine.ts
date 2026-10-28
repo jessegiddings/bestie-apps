@@ -22,15 +22,17 @@ export interface SpeechEngine {
   available(): Promise<boolean>;
 }
 
-let currentPlayer: { remove: () => void; pause: () => void } | null = null;
-
 export function recordedAudio(asset: number): SpeechEngine {
+  let currentPlayer: { remove: () => void; pause: () => void } | null = null;
+  let generation = 0;
   return {
     name: 'recorded',
     speak(req) {
+      const token = ++generation;
       void (async () => {
         try {
           const Audio = await import('expo-audio');
+          if (token !== generation) return;
           const player = Audio.createAudioPlayer(asset);
           currentPlayer = player;
           player.volume = req.volume;
@@ -48,8 +50,10 @@ export function recordedAudio(asset: number): SpeechEngine {
             if (currentPlayer === player) currentPlayer = null;
           };
           player.addListener('playbackStatusUpdate', (st) => {
+            if (token !== generation || finished) return;
             if (st.error) {
               finished = true;
+              player.remove();
               req.onError(String(st.error));
               if (currentPlayer === player) currentPlayer = null;
               return;
@@ -64,11 +68,12 @@ export function recordedAudio(asset: number): SpeechEngine {
           });
           player.play();
         } catch (e) {
-          req.onError((e as Error)?.message || 'audio_error');
+          if (token === generation) req.onError((e as Error)?.message || 'audio_error');
         }
       })();
     },
     stop() {
+      generation++;
       try {
         currentPlayer?.pause();
         currentPlayer?.remove();

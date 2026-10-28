@@ -1,6 +1,6 @@
 import { shortLabel } from '@bestie/core';
 import { Redirect, router } from 'expo-router';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Pressable, Share, Text, TextInput, View } from 'react-native';
 import { APP_NAME, HOST_NAME } from '@/content/brand';
 import { BEFORE_START, checkInForDay } from '@/content/checkins';
@@ -8,11 +8,11 @@ import { PAUSE_NOTE } from '@/content/clips';
 import { mocktailForDay } from '@/content/mocktails';
 import { MOODS } from '@/content/moods';
 import { questForDay } from '@/content/quests';
-import { buddyConfigured, shareDay } from '@/services/buddy';
+import { useToday } from '@/state/lifecycle';
 import { badgeById, earnedBadges } from '@/state/badges';
 import { computeStats, type DayEntry } from '@/state/stats';
-import { today, useDry } from '@/state/store';
-import { BadgeArt, Body, Button, Card, H2, Icon, Label, Ring, Row, Screen, Stat, TIER_LABEL, VoiceNote, styles as kit, type IconName } from '@/ui/kit';
+import { useDry } from '@/state/store';
+import { BadgeArt, Body, Button, Card, H1, H2, Icon, Label, Ring, Row, Screen, Stat, TIER_LABEL, VoiceNote, styles as kit, type IconName } from '@/ui/kit';
 import { colors, fonts, radius, space } from '@/ui/theme';
 
 
@@ -20,20 +20,16 @@ export default function Tonight() {
   const st = useDry();
   const { plan, days, pact, celebrated, heard, quests, cravingsBeaten } = st;
   const premium = st.isPremium();
-  const [date] = useState(today);
+  const date = useToday();
 
   const stats = useMemo(() => (plan ? computeStats(plan, days, date) : null), [plan, days, date]);
   const earned = useMemo(
-    () => (stats ? earnedBadges({ dryDays: stats.dryDays, days, cravingsBeaten, questsDone: Object.keys(quests).length, heard, paired: Boolean(pact?.buddyName) }) : []),
-    [stats, days, cravingsBeaten, quests, heard, pact],
+    () => [...new Set([...st.earned, ...(stats ? earnedBadges({ dryDays: stats.dryDays, days, cravingsBeaten, questsDone: Object.keys(quests).length, heard, paired: Boolean(pact?.buddyName) }) : [])])],
+    [stats, days, cravingsBeaten, quests, heard, pact, st.earned],
   );
   const fresh = earned.filter((id) => !celebrated.includes(id));
 
-  useEffect(() => {
-    if (!pact || !buddyConfigured) return;
-    const entry = days[date];
-    if (entry && entry.mark !== 'paused') void shareDay(pact.code, date, entry.mark).catch(() => undefined);
-  }, [pact, days, date]);
+
 
   if (!plan || !stats) return <Redirect href="/onboarding" />;
 
@@ -50,30 +46,43 @@ export default function Tonight() {
       <Row>
         <View style={{ flex: 1 }}>
           <Label color={colors.accent}>{APP_NAME.toUpperCase()}</Label>
-          <Text style={{ fontFamily: fonts.body, color: colors.muted, fontSize: 14, marginTop: 2 }}>{`Tonight, ${shortLabel(date)}`}</Text>
+          <Text style={{ fontFamily: fonts.body, color: colors.muted, fontSize: 14, marginTop: 2 }}>{shortLabel(date)}</Text>
         </View>
         <Pressable accessibilityRole="button" accessibilityLabel="Settings" onPress={() => router.push('/settings')} hitSlop={12} style={{ padding: 6 }}>
           <Icon name="gear" color={colors.muted} />
         </Pressable>
       </Row>
 
-      <Ring progress={stats.started ? stats.dryDays / stats.challenge.days : 0}>
-        <Text style={{ fontFamily: fonts.display, fontSize: 64, lineHeight: 70, color: colors.ink }}>{stats.started ? stats.dryDays : stats.daysUntilStart}</Text>
-        <Text style={{ fontFamily: fonts.bold, fontSize: 13, letterSpacing: 1.2, color: colors.muted }}>
-          {stats.started ? (stats.dryDays === 1 ? 'DRY DAY' : 'DRY DAYS') : stats.daysUntilStart === 1 ? 'DAY TO GO' : 'DAYS TO GO'}
-        </Text>
-        <Text style={{ fontFamily: fonts.body, fontSize: 13, color: colors.faint, marginTop: 6 }}>
-          {stats.started ? `Day ${stats.dayNumber} of ${stats.challenge.days} · ${stats.challenge.name}` : `Starts ${shortLabel(plan.startDate)}`}
-        </Text>
-      </Ring>
+      <View style={{ gap: 10, paddingTop: 8 }}>
+        <Label>A LITTLE SPACE FOR YOU</Label>
+        <H1>{stats.started ? 'A little clearer.\nA little mightier.' : 'Good things\nstart here.'}</H1>
+        <Body muted>One day at a time. On your terms.</Body>
+      </View>
 
-      {stats.started && (
-        <Row gap={space.sm}>
-          <MiniStat value={String(stats.run)} label="in a row" color={colors.mint} />
-          <MiniStat value={`$${stats.moneySaved}`} label="saved" color={colors.gold} />
-          <MiniStat value={String(stats.drinksSkipped)} label="skipped" color={colors.lilac} />
+      <Card tint={colors.accentSoft} style={{ padding: 20 }}>
+        <Row style={{ justifyContent: 'space-between' }}>
+          <View style={{ flex: 1, gap: 8 }}>
+            <Label color={colors.accent}>{stats.challenge.name.toUpperCase()}</Label>
+            <Text style={{ fontFamily: fonts.display, fontSize: 52, lineHeight: 60, color: colors.ink }}>{stats.started ? stats.dryDays : stats.daysUntilStart}</Text>
+            <Body>{stats.started ? 'dry days, and counting' : 'days until your fresh start'}</Body>
+          </View>
+          <Ring size={84} stroke={4} progress={stats.dryDays / stats.challenge.days}>
+            <Icon name="sprout" size={32} color={colors.accent} strokeWidth={1.4} />
+          </Ring>
         </Row>
-      )}
+        <View style={{ height: 1, backgroundColor: '#CCD8C6', marginVertical: 12 }} />
+        <Body muted style={kit.small}>{stats.started ? `${stats.daysLeft} dry days to your ${stats.challenge.days}-day goal` : `Starts ${shortLabel(plan.startDate)}`}</Body>
+      </Card>
+
+
+
+      {stats.started && <LogCard key={date} date={date} entry={entry} passesLeft={stats.passesLeft} />}
+
+      {stats.started && <Row gap={space.lg}>
+        <MiniStat value={String(stats.run)} label="challenge run" color={colors.ink} />
+        <MiniStat value={`$${stats.moneySaved}`} label="saved, est." color={colors.ink} />
+        <MiniStat value={String(stats.drinksSkipped)} label="skipped, est." color={colors.ink} />
+      </Row>}
 
       {newBadge && (
         <Card glow="gold">
@@ -98,7 +107,6 @@ export default function Tonight() {
         </Card>
       )}
 
-      {stats.started && <LogCard date={date} entry={entry} passesLeft={stats.passesLeft} />}
 
       {stats.unlogged.length > 0 && (
         <Card glow="dusk">
@@ -113,12 +121,12 @@ export default function Tonight() {
       {entry?.mark === 'paused' ? (
         <VoiceNote clipId={PAUSE_NOTE.id} title="Pause day" onPlayed={() => st.markHeard(PAUSE_NOTE.id)} />
       ) : checkIn ? (
-        <VoiceNote clipId={checkIn.id} title="Tonight" locked={locked} onLocked={() => router.push('/premium')} onPlayed={() => st.markHeard(checkIn.id)} />
+        <VoiceNote clipId={checkIn.id} title="Your daily pause" locked={locked} onLocked={() => router.push('/premium')} onPlayed={() => st.markHeard(checkIn.id)} />
       ) : (
         <VoiceNote clipId={BEFORE_START.id} title="Before we start" onPlayed={() => st.markHeard(BEFORE_START.id)} />
       )}
 
-      <Button title="I'm craving a drink" icon="wave" kind="coral" onPress={() => router.push('/craving')} />
+      <Button title="Need a little support?" icon="wave" kind="secondary" onPress={() => router.push('/craving')} />
 
       {stats.started && (
         <Pressable accessibilityRole="checkbox" accessibilityState={{ checked: questDone }} onPress={() => st.toggleQuest(date, quest.id)}>
@@ -166,7 +174,7 @@ export default function Tonight() {
 
 function MiniStat({ value, label, color }: { value: string; label: string; color: string }) {
   return (
-    <View style={{ flex: 1, backgroundColor: colors.surface, borderRadius: radius.sm, borderWidth: 1, borderColor: colors.line, padding: space.md }}>
+    <View style={{ flex: 1, paddingVertical: space.sm }}>
       <Stat value={value} label={label} color={color} />
     </View>
   );
@@ -184,10 +192,10 @@ function LogCard({ date, entry, passesLeft }: { date: string; entry: DayEntry | 
   const [note, setNote] = useState(entry?.note ?? '');
   return (
     <Card>
-      <H2>{entry ? 'Tonight is logged.' : 'How did today go?'}</H2>
+      <H2>{entry ? 'A moment to check in.' : 'How did today go?'}</H2>
       {entry ? (
         <Body muted style={kit.small}>
-          {entry.mark === 'kept' ? 'Dry day. Look at you.' : entry.mark === 'paused' ? 'Pause day, planned ahead. Your run is safe.' : 'You had a drink. Every dry day still counts.'}
+          {entry.mark === 'kept' ? 'Dry day. Look at you.' : entry.mark === 'paused' ? 'A pause preserves your challenge run, but does not count as a dry day.' : 'You had a drink. Every dry day still counts.'}
         </Body>
       ) : null}
       <Row gap={space.sm} style={{ marginTop: space.md }}>

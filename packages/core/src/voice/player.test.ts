@@ -33,6 +33,24 @@ describe('voice player', () => {
   });
   afterEach(() => cancel());
 
+  it('only credits successful recorded playback', () => {
+    const complete = jest.fn();
+    let request: Parameters<SpeechEngine['speak']>[0];
+    setEngineFactory(() => ({ ...fakeEngine(log), speak: req => { request = req; req.onStart(); } }));
+    play('b', { onComplete: complete });
+    expect(complete).not.toHaveBeenCalled();
+    play('a', { onComplete: complete });
+    cancel();
+    request!.onDone();
+    expect(complete).not.toHaveBeenCalled();
+    play('a', { onComplete: complete });
+    request!.onError('failed');
+    expect(complete).not.toHaveBeenCalled();
+    play('a', { onComplete: complete });
+    request!.onDone();
+    expect(complete).toHaveBeenCalledTimes(1);
+  });
+
   it('plays a recorded clip and captions it', () => {
     expect(play('a')).toBe(true);
     expect(useVoice.getState().caption?.text).toBe('Hey you');

@@ -1,12 +1,15 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Share, TextInput, View } from 'react-native';
+import { AppState, Share, TextInput, View } from 'react-native';
 import { APP_NAME } from '@/content/brand';
-import { buddyConfigured, buddyStatus, createPact, joinPact, type BuddyStatus } from '@/services/buddy';
+import { buddyConfigured, buddyStatus, createPact, joinPact, leavePact, type BuddyStatus } from '@/services/buddy';
+import { useSyncStatus } from '@/services/buddySync';
 import { today, useDry } from '@/state/store';
 import { Body, Button, Card, H1, H2, Label, Row, Screen } from '@/ui/kit';
 import { colors, fonts, radius, space } from '@/ui/theme';
 
 export default function Buddy() {
+  const sync = useSyncStatus(s => s.status);
+  const [confirmLeave, setConfirmLeave] = useState(false);
   const pact = useDry((s) => s.pact);
   const setPact = useDry((s) => s.setPact);
   const [name, setName] = useState(pact?.myName ?? '');
@@ -19,6 +22,7 @@ export default function Buddy() {
     if (!pact || !buddyConfigured) return;
     try {
       const s = await buddyStatus(pact.code, today());
+      setError(null);
       setStatus(s);
       if (s.name && s.name !== pact.buddyName) setPact({ ...pact, buddyName: s.name });
     } catch (e) {
@@ -28,6 +32,9 @@ export default function Buddy() {
 
   useEffect(() => {
     void refresh();
+    const timer = setInterval(() => void refresh(), 30000);
+    const sub = AppState.addEventListener('change', state => { if (state === 'active') void refresh(); });
+    return () => { clearInterval(timer); sub.remove(); };
   }, [refresh]);
 
   const run = async (fn: () => Promise<void>) => {
@@ -45,10 +52,10 @@ export default function Buddy() {
     return (
       <Screen tab="buddy">
         <H1>Do this with someone.</H1>
-        <Body muted>Pair with a partner or friend and you'll each see the other's dry days, and you can nudge each other on the hard nights.</Body>
+        <Body muted>Pair with a partner or friend and you'll each see the other's dry days, keep each other company along the way.</Body>
         <Card glow="dusk">
-          <Label color={colors.accent}>COMING IN THE NEXT BUILD</Label>
-          <Body style={{ marginTop: space.sm }}>Buddy pairing isn't switched on in this test build yet. It will be before launch.</Body>
+          <Label color={colors.accent}>BUDDY PREVIEW</Label>
+          <Body style={{ marginTop: space.sm }}>Buddy pairing needs its secure service connected before it can be tested across phones. Your personal tracking works now.</Body>
         </Card>
       </Screen>
     );
@@ -59,7 +66,7 @@ export default function Buddy() {
     return (
       <Screen tab="buddy">
         <H1>Do this with someone.</H1>
-        <Body muted>Pair with a partner or friend and you'll each see the other's dry days. Nothing else is shared.</Body>
+        <Body muted>Pair with a partner or friend and you'll each see the other's dry days. Your first name, dates and dry / drink / pause status are shared. Notes and moods stay on your phone.</Body>
         <Label>YOUR FIRST NAME</Label>
         <TextInput value={name} onChangeText={setName} style={input} accessibilityLabel="Your first name" placeholderTextColor={colors.muted} placeholder="Sam" />
         <Button
@@ -99,7 +106,7 @@ export default function Buddy() {
       )}
       {status?.name && (
         <Card>
-          <Body>{`${status.name} has ${status.dryDays} dry ${status.dryDays === 1 ? 'day' : 'days'}. Today: ${status.today === 'kept' ? 'dry' : status.today === 'missed' ? 'had a drink' : 'not logged yet'}.`}</Body>
+          <Body>{`${status.name} has ${status.dryDays} dry ${status.dryDays === 1 ? 'day' : 'days'}. Today: ${status.today === 'kept' ? 'dry' : status.today === 'missed' ? 'had a drink' : status.today === 'paused' ? 'pause day' : 'not logged yet'}.`}</Body>
           <Row gap={6}>
             {status.lastFourteen.map((d) => (
               <View key={d.date} style={{ flex: 1, height: 22, borderRadius: 4, backgroundColor: d.mark === 'kept' ? colors.accent : d.mark === 'missed' ? colors.missed : colors.line }} />
@@ -116,7 +123,8 @@ export default function Buddy() {
       )}
       {error ? <Body style={{ color: colors.coral }}>{error}</Body> : null}
       <Button title="Refresh" kind="secondary" onPress={() => void refresh()} />
-      <Button title="Leave this pair" kind="ghost" onPress={() => setPact(null)} />
+      <Body muted>{sync === 'error' ? 'Your changes are saved on this phone. Buddy sync failed; we’ll retry automatically when connected.' : sync === 'syncing' ? 'Sharing your latest check-ins…' : sync === 'saved' ? 'Your check-ins are up to date.' : ''}</Body>
+      {confirmLeave ? <Card><Body>Leaving ends this pair and deletes its shared history for both people. Your private journal stays on this phone.</Body><Button title="End pair and delete shared history" disabled={busy} onPress={() => void run(async () => { await leavePact(pact.code); setPact(null); setStatus(null); setConfirmLeave(false); })} /><Button title="Keep this pair" kind="ghost" onPress={() => setConfirmLeave(false)} /></Card> : <Button title="Leave this pair" kind="ghost" onPress={() => setConfirmLeave(true)} />}
     </Screen>
   );
 }

@@ -1,3 +1,4 @@
+import Constants from 'expo-constants';
 import { createPurchases, type ProductDef } from '@bestie/core';
 
 /** Free: day counter, logging and buddy pairing. Premium: every check-in, craving talks and patches. */
@@ -8,6 +9,7 @@ export const PRODUCTS: ProductDef[] = [
 
 export const purchases = createPurchases({
   entitlement: 'premium',
+  preview: __DEV__ && (Constants.appOwnership === 'expo' || process.env.EXPO_PUBLIC_PREVIEW_MODE === 'true'),
   products: PRODUCTS,
   keys: { ios: process.env.EXPO_PUBLIC_REVENUECAT_IOS_KEY, android: process.env.EXPO_PUBLIC_REVENUECAT_ANDROID_KEY },
 });

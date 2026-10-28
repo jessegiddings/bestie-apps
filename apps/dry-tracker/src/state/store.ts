@@ -1,7 +1,8 @@
 import { deviceStorage, evaluate, FREE, localDate, type Entitlement, type LocalDate } from '@bestie/core';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { DayEntry, Mood, Plan } from './stats';
+import { computeStats, type DayEntry, type Mood, type Plan } from './stats';
+import { earnedBadges } from './badges';
 
 export interface Pact {
   code: string;
@@ -19,6 +20,7 @@ export interface DryState {
   heard: string[];
   /** Badge ids the user has already seen celebrated. */
   celebrated: string[];
+  earned: string[];
   lastCravingIndex: number | null;
   /** Times the craving button was ridden out ("I'm okay now"). */
   cravingsBeaten: number;
@@ -49,6 +51,7 @@ const initial = {
   pact: null,
   heard: [],
   celebrated: [],
+  earned: [],
   lastCravingIndex: null,
   cravingsBeaten: 0,
   quests: {},
@@ -56,51 +59,61 @@ const initial = {
 
 export const useDry = create<DryState>()(
   persist(
-    (set, get) => ({
+    (set, get) => {
+      const awards = (s: DryState) => s.plan ? earnedBadges({
+        dryDays: computeStats(s.plan, s.days, today()).dryDays, days: s.days,
+        cravingsBeaten: s.cravingsBeaten, questsDone: Object.keys(s.quests).length,
+        heard: s.heard, paired: Boolean(s.pact?.buddyName),
+      }) : [];
+      const save = (patch: Partial<DryState> | ((s: DryState) => Partial<DryState>)) => set(s => {
+        const next = { ...s, ...(typeof patch === 'function' ? patch(s) : patch) };
+        return { ...next, earned: [...new Set([...s.earned, ...awards(s), ...awards(next)])] };
+      });
+      return ({
       ...initial,
-      setPlan: (plan) => set({ plan }),
-      updatePlan: (patch) => set((s) => (s.plan ? { plan: { ...s.plan, ...patch } } : s)),
+      setPlan: (plan) => save({ plan }),
+      updatePlan: (patch) => save((s) => (s.plan ? { plan: { ...s.plan, ...patch } } : s)),
       logDay: (date, mark, extra = {}) =>
-        set((s) => {
+        save((s) => {
           // Re-logging a day keeps the mood and note already written for it.
           const prev = s.days[date];
           const keep = prev ? { mood: prev.mood, note: prev.note } : {};
           return { days: { ...s.days, [date]: { ...keep, date, mark, ...extra, at: new Date().toISOString() } } };
         }),
-      noteDay: (date, extra) => set((s) => (s.days[date] ? { days: { ...s.days, [date]: { ...s.days[date], ...extra } } } : s)),
+      noteDay: (date, extra) => save((s) => (s.days[date] ? { days: { ...s.days, [date]: { ...s.days[date], ...extra } } } : s)),
       clearDay: (date) =>
-        set((s) => {
+        save((s) => {
           const days = { ...s.days };
           delete days[date];
           return { days };
         }),
-      markHeard: (id) => set((s) => (s.heard.includes(id) ? s : { heard: [...s.heard, id] })),
-      markCelebrated: (d) => set((s) => ({ celebrated: [...new Set([...s.celebrated, ...d])] })),
-      setCravingIndex: (i) => set({ lastCravingIndex: i }),
-      beatCraving: () => set((s) => ({ cravingsBeaten: s.cravingsBeaten + 1 })),
+      markHeard: (id) => save((s) => (s.heard.includes(id) ? s : { heard: [...s.heard, id] })),
+      markCelebrated: (d) => save((s) => ({ celebrated: [...new Set([...s.celebrated, ...d])] })),
+      setCravingIndex: (i) => save({ lastCravingIndex: i }),
+      beatCraving: () => save((s) => ({ cravingsBeaten: s.cravingsBeaten + 1 })),
       toggleQuest: (date, questId) =>
-        set((s) => {
+        save((s) => {
           const quests = { ...s.quests };
           if (quests[date]) delete quests[date];
           else quests[date] = questId;
           return { quests };
         }),
-      setEntitlement: (entitlement) => set({ entitlement }),
-      setPact: (pact) => set({ pact }),
+      setEntitlement: (entitlement) => save({ entitlement }),
+      setPact: (pact) => save({ pact }),
       isPremium: () => evaluate(get().entitlement, new Date().toISOString()).active,
       reset: () => set({ ...initial }),
-    }),
+    }); },
     {
       name: 'dry-tracker-v1',
-      version: 2,
+      version: 3,
       storage: deviceStorage,
       // v1 celebrated patch day counts as numbers; v2 uses badge ids and adds cravings and quests.
       migrate: (old, version) => {
         const s = (old ?? {}) as Partial<DryState> & { celebrated?: (number | string)[] };
         if (version < 2) {
-          return { ...s, celebrated: (s.celebrated ?? []).map((c) => (typeof c === 'number' ? `day-${c}` : c)), cravingsBeaten: 0, quests: {} } as DryState;
+          return { ...s, celebrated: (s.celebrated ?? []).map((c) => (typeof c === 'number' ? `day-${c}` : c)), cravingsBeaten: 0, quests: {}, earned: [] } as DryState;
         }
-        return s as DryState;
+        return { ...s, earned: s.earned ?? s.celebrated ?? [] } as DryState;
       },
     },
   ),

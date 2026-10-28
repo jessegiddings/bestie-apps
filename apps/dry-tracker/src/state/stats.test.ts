@@ -1,3 +1,4 @@
+import { addDays } from '@bestie/core';
 import { computeStats, type DayEntry, type Plan } from './stats';
 
 const plan: Plan = { startDate: '2027-01-01', challengeDays: 31, drinksPerWeek: 14, costPerDrink: 9, checkInHour: 18, why: '' };
@@ -52,4 +53,16 @@ describe('dry tracker stats', () => {
     const book = Object.fromEntries([entry('2026-12-30', 'kept'), entry('2027-01-01', 'kept')]);
     expect(computeStats(plan, book, '2027-01-01').dryDays).toBe(1);
   });
+});
+
+it('keeps an unfinished goal in the future when days are missing or missed', () => {
+  const s = computeStats(plan, Object.fromEntries([entry('2027-01-01', 'missed')]), '2027-03-01');
+  expect(s.daysLeft).toBe(31);
+  expect(s.finishDate).toBe('2027-03-31');
+});
+it('marks the final ninety-day challenge complete', () => {
+  const book = Object.fromEntries(Array.from({ length: 90 }, (_, i) => entry(addDays(plan.startDate, i), 'kept')));
+  const s = computeStats({ ...plan, challengeDays: 90 }, book, '2027-03-31');
+  expect(s.finished).toEqual([90]);
+  expect(s.daysLeft).toBe(0);
 });

@@ -30,6 +30,7 @@ export interface Plan {
   costPerDrink: number;
   /** Local hour (0-23) for the evening check-in reminder. */
   checkInHour: number;
+  remindersEnabled?: boolean;
   why: string;
 }
 
@@ -69,7 +70,7 @@ function challengeFor(plan: Plan, dryDays: number) {
   const startIdx = Math.max(0, CHALLENGES.findIndex((c) => c.days === plan.challengeDays));
   const finished: ChallengeDays[] = [];
   for (let i = startIdx; i < CHALLENGES.length; i++) {
-    if (dryDays >= CHALLENGES[i].days && i < CHALLENGES.length - 1) finished.push(CHALLENGES[i].days);
+    if (dryDays >= CHALLENGES[i].days) finished.push(CHALLENGES[i].days);
     else return { challenge: CHALLENGES[i], finished };
   }
   return { challenge: CHALLENGES[CHALLENGES.length - 1], finished };
@@ -84,7 +85,11 @@ export function computeStats(plan: Plan, book: Record<LocalDate, DayEntry>, toda
   const perDay = Math.max(0, plan.drinksPerWeek) / 7;
   const passesUsed = Object.values(allDays).filter((d) => d.mark === 'paused').length;
   const { challenge, finished } = challengeFor(plan, dryDays);
-  const finishDate = addDays(plan.startDate, challenge.days - 1 + passesUsed);
+  const daysLeft = Math.max(0, challenge.days - dryDays);
+  const futurePauses = Object.values(allDays).filter(d => d.date > today && d.mark === 'paused').length;
+  const finishDate = !started ? addDays(plan.startDate, challenge.days - 1 + passesUsed)
+    : daysLeft === 0 ? today
+    : addDays(today, daysLeft - (book[today] ? 0 : 1) + futurePauses);
   return {
     started,
     daysUntilStart: started ? 0 : -offset,
@@ -99,7 +104,7 @@ export function computeStats(plan: Plan, book: Record<LocalDate, DayEntry>, toda
     todayLogged: Boolean(book[today]),
     challenge,
     finishDate,
-    daysLeft: Math.max(0, daysBetween(today, finishDate) + (started ? 0 : 1)),
+    daysLeft,
     finished,
     passesUsed,
     passesLeft: Math.max(0, challenge.passes - passesUsed),

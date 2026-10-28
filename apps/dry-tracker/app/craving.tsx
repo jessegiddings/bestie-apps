@@ -23,7 +23,7 @@ export default function Craving() {
   return (
     <Screen>
       <Label color={colors.coral}>RIGHT NOW</Label>
-      <H1>Breathe. This wave passes in about 15 minutes.</H1>
+      <H1>Take a breath. One moment at a time.</H1>
       <VoiceNote clipId={talk.id} title="Craving talk" />
       {!premium && (
         <Card>
