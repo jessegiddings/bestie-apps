@@ -1,24 +1,24 @@
 {
   "expo": {
-    "name": "Dry Tracker",
-    "slug": "dry-tracker",
+    "name": "Dry & Mighty",
+    "slug": "dry-and-mighty",
     "version": "0.1.0",
-    "scheme": "drytracker",
+    "scheme": "dryandmighty",
     "orientation": "portrait",
-    "userInterfaceStyle": "light",
-    "backgroundColor": "#F3F6F2",
+    "userInterfaceStyle": "dark",
+    "backgroundColor": "#100E1A",
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "app.bestie.drytracker",
+      "bundleIdentifier": "app.bestie.dryandmighty",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {
-      "package": "app.bestie.drytracker",
+      "package": "app.bestie.dryandmighty",
       "adaptiveIcon": {
-        "backgroundColor": "#F3F6F2"
+        "backgroundColor": "#100E1A"
       }
     },
     "web": {
@@ -32,13 +32,13 @@
       [
         "expo-notifications",
         {
-          "color": "#1F6F5B"
+          "color": "#F7B58F"
         }
       ],
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#F3F6F2"
+          "backgroundColor": "#100E1A"
         }
       ]
     ],

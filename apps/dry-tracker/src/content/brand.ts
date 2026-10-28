@@ -1,8 +1,8 @@
 /**
- * Names in one place. The app name is a working title until the name check is done, and the host
+ * Names in one place. "Dry & Mighty" is the pick for now (her vote may change it), and the host
  * name is a placeholder until she picks how she wants to appear (first name, full name or a nickname).
  */
-export const APP_NAME = 'Dry Tracker';
+export const APP_NAME = 'Dry & Mighty';
 export const HOST_NAME = 'Bestie';
 
 /** SAMHSA's National Helpline: free, confidential, 24/7, in English and Spanish (US). */

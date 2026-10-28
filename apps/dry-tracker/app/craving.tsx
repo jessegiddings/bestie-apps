@@ -41,7 +41,14 @@ export default function Craving() {
         <Body muted style={kit.small}>{`${HELPLINE.name}: ${HELPLINE.phone}. ${HELPLINE.note}`}</Body>
         <Button title="Call the helpline" kind="coral" style={{ marginTop: space.md }} onPress={() => void Linking.openURL(`tel:${HELPLINE.phone.replace(/-/g, '')}`).catch(() => undefined)} />
       </Card>
-      <Button title="I'm okay now" onPress={() => router.back()} />
+      <Button
+        title="I rode it out"
+        onPress={() => {
+          useDry.getState().beatCraving();
+          router.back();
+        }}
+      />
+      <Button title="Close" kind="ghost" onPress={() => router.back()} />
     </Screen>
   );
 }

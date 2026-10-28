@@ -1,4 +1,3 @@
-import { router } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { Share, TextInput, View } from 'react-native';
 import { APP_NAME } from '@/content/brand';
@@ -44,10 +43,13 @@ export default function Buddy() {
 
   if (!buddyConfigured) {
     return (
-      <Screen>
-        <H1>Buddy</H1>
-        <Body muted>Buddy pairing isn't set up in this test build yet. It will be on before launch.</Body>
-        <Button title="Back" kind="ghost" onPress={() => router.back()} />
+      <Screen tab="buddy">
+        <H1>Do this with someone.</H1>
+        <Body muted>Pair with a partner or friend and you'll each see the other's dry days, and you can nudge each other on the hard nights.</Body>
+        <Card glow="dusk">
+          <Label color={colors.accent}>COMING IN THE NEXT BUILD</Label>
+          <Body style={{ marginTop: space.sm }}>Buddy pairing isn't switched on in this test build yet. It will be before launch.</Body>
+        </Card>
       </Screen>
     );
   }
@@ -55,7 +57,7 @@ export default function Buddy() {
   if (!pact) {
     const me = name.trim();
     return (
-      <Screen>
+      <Screen tab="buddy">
         <H1>Do this with someone.</H1>
         <Body muted>Pair with a partner or friend and you'll each see the other's dry days. Nothing else is shared.</Body>
         <Label>YOUR FIRST NAME</Label>
@@ -77,13 +79,12 @@ export default function Buddy() {
           />
         </Card>
         {error ? <Body style={{ color: colors.coral }}>{error}</Body> : null}
-        <Button title="Back" kind="ghost" onPress={() => router.back()} />
       </Screen>
     );
   }
 
   return (
-    <Screen>
+    <Screen tab="buddy">
       <H1>{pact.buddyName ? `You and ${pact.buddyName}` : 'Waiting for your buddy'}</H1>
       {!pact.buddyName && (
         <Card>
@@ -116,7 +117,6 @@ export default function Buddy() {
       {error ? <Body style={{ color: colors.coral }}>{error}</Body> : null}
       <Button title="Refresh" kind="secondary" onPress={() => void refresh()} />
       <Button title="Leave this pair" kind="ghost" onPress={() => setPact(null)} />
-      <Button title="Back" kind="ghost" onPress={() => router.back()} />
     </Screen>
   );
 }
@@ -124,9 +124,9 @@ export default function Buddy() {
 const input = {
   minHeight: 52,
   borderRadius: radius.sm,
-  borderWidth: 1.5,
+  borderWidth: 1,
   borderColor: colors.line,
-  backgroundColor: colors.surface,
+  backgroundColor: colors.raised,
   paddingHorizontal: space.md,
   fontFamily: fonts.body,
   fontSize: 17,

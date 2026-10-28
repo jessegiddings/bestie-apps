@@ -17,6 +17,7 @@ export default function RootLayout() {
   const [loaded, fontError] = useFonts({
     PlusJakartaSans_500Medium: require('../assets/fonts/PlusJakartaSans_500Medium.ttf'),
     PlusJakartaSans_700Bold: require('../assets/fonts/PlusJakartaSans_700Bold.ttf'),
+    Fraunces_600SemiBold: require('../assets/fonts/Fraunces_600SemiBold.ttf'),
   });
 
   useEffect(() => {
@@ -37,9 +38,12 @@ export default function RootLayout() {
 
   return (
     <SafeAreaProvider>
-      <StatusBar style="dark" />
+      <StatusBar style="light" />
       <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.ground } }}>
-        <Stack.Screen name="index" />
+        <Stack.Screen name="index" options={{ animation: 'none' }} />
+        <Stack.Screen name="journey" options={{ animation: 'none' }} />
+        <Stack.Screen name="badges" options={{ animation: 'none' }} />
+        <Stack.Screen name="buddy" options={{ animation: 'none' }} />
         <Stack.Screen name="onboarding" options={{ gestureEnabled: false }} />
         <Stack.Screen name="craving" options={{ presentation: 'modal' }} />
         <Stack.Screen name="premium" options={{ presentation: 'modal' }} />

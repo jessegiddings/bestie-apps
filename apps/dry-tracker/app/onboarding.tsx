@@ -141,9 +141,9 @@ function inputStyle(minHeight = 52) {
   return {
     minHeight,
     borderRadius: radius.sm,
-    borderWidth: 1.5,
+    borderWidth: 1,
     borderColor: colors.line,
-    backgroundColor: colors.surface,
+    backgroundColor: colors.raised,
     paddingHorizontal: space.md,
     paddingVertical: space.sm,
     fontFamily: fonts.body,
