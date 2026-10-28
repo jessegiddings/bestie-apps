@@ -3,7 +3,7 @@
  * name is a placeholder until she picks how she wants to appear (first name, full name or a nickname).
  */
 export const APP_NAME = 'Dry & Mighty';
-export const HOST_NAME = 'Bestie';
+export const HOST_NAME = 'Hannah';
 
 /** SAMHSA's National Helpline: free, confidential, 24/7, in English and Spanish (US). */
 export const HELPLINE = { name: 'SAMHSA National Helpline', phone: '1-800-662-4357', note: 'Free, confidential, 24 hours a day, 7 days a week.' } as const;

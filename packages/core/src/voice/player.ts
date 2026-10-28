@@ -52,6 +52,8 @@ interface Line {
   clip: Clip;
   priority: number;
   onDone?: () => void;
+  /** Only fires after recorded audio finishes successfully. */
+  onComplete?: () => void;
 }
 
 const clips: Record<string, Clip> = {};
@@ -121,14 +123,14 @@ function clearWatchdog() {
 }
 
 function finish(line: Line, ok: boolean, error?: string) {
-  clearWatchdog();
   if (current !== line) return;
+  clearWatchdog();
   current = null;
   currentEngine = null;
   const st = useVoice.getState();
   useVoice.setState({ status: ok ? (st.muted ? 'muted' : 'idle') : 'failed', lastError: ok ? null : error ?? 'audio_failed' });
   line.onDone?.();
-  if (ok) pump();
+  if (ok) { line.onComplete?.(); pump(); }
 }
 
 function startLine(line: Line) {
@@ -149,6 +151,7 @@ function startLine(line: Line) {
     rate: 1,
     volume: useVoice.getState().volume,
     onStart: () => {
+      if (current !== line) return;
       started = true;
       clearWatchdog();
     },
@@ -165,6 +168,8 @@ function pump() {
 export interface PlayOptions {
   interrupt?: boolean;
   onDone?: () => void;
+  /** Only fires after recorded audio finishes successfully. */
+  onComplete?: () => void;
 }
 
 /**
@@ -174,7 +179,7 @@ export interface PlayOptions {
 export function play(id: string, opts: PlayOptions = {}): boolean {
   const clip = clips[id];
   if (!clip) throw new Error(`Unknown clip ${id}`);
-  const line: Line = { clip, priority: clip.priority ?? 2, onDone: opts.onDone };
+  const line: Line = { clip, priority: clip.priority ?? 2, onDone: opts.onDone, onComplete: opts.onComplete };
   lastLine = line;
   const st = useVoice.getState();
   if (st.muted || clip.asset == null) {

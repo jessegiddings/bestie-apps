@@ -1,6 +1,7 @@
 import 'react-native-url-polyfill/auto';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
+import type { DayEntry } from '@/state/stats';
 import { addDays, type LocalDate } from '@bestie/core';
 
 /**
@@ -50,31 +51,47 @@ export async function joinPact(code: string, myName: string): Promise<string> {
   return String(data);
 }
 
-export async function shareDay(code: string, date: LocalDate, mark: 'kept' | 'missed'): Promise<void> {
-  const supa = await db();
-  const { data } = await supa.auth.getUser();
-  const { error } = await supa.from('pact_days').upsert({ pact_code: code, user_id: data.user?.id, date, mark, updated_at: new Date().toISOString() });
-  if (error) throw error;
+// Serial writes ensure an older snapshot cannot overwrite a later correction.
+let writes: Promise<unknown> = Promise.resolve();
+function serial<T>(operation: () => Promise<T>): Promise<T> {
+  const result = writes.then(operation, operation);
+  writes = result.catch(() => undefined);
+  return result;
+}
+export function syncDays(code: string, days: Record<string, DayEntry>): Promise<void> {
+  const snapshot = Object.values(days).map(({ date, mark }) => ({ date, mark }));
+  return serial(async () => {
+    const supa = await db();
+    const { error } = await supa.rpc('sync_pact_days', { p_code: code, p_days: snapshot });
+    if (error) throw error;
+  });
+}
+export function leavePact(code: string): Promise<void> {
+  return serial(async () => {
+    const supa = await db();
+    const { error } = await supa.rpc('leave_pact', { p_code: code });
+    if (error) throw error;
+  });
 }
 
 export interface BuddyStatus {
   name: string | null;
   dryDays: number;
-  today: 'kept' | 'missed' | null;
-  lastFourteen: { date: LocalDate; mark: 'kept' | 'missed' | null }[];
+  today: 'kept' | 'missed' | 'paused' | null;
+  lastFourteen: { date: LocalDate; mark: 'kept' | 'missed' | 'paused' | null }[];
 }
 
 export async function buddyStatus(code: string, today: LocalDate): Promise<BuddyStatus> {
   const supa = await db();
   const me = (await supa.auth.getUser()).data.user?.id;
   const { data: pact, error: pactErr } = await supa.from('pacts').select('owner, owner_name, partner, partner_name').eq('code', code).single();
-  if (pactErr) throw pactErr;
+  if (pactErr) throw new Error(pactErr.code === 'PGRST116' ? 'This pair has ended. Leave this pair to create another.' : pactErr.message);
   const partnerId = pact.owner === me ? pact.partner : pact.owner;
   const name = pact.owner === me ? pact.partner_name : pact.owner_name;
   if (!partnerId) return { name: null, dryDays: 0, today: null, lastFourteen: [] };
   const { data: rows, error } = await supa.from('pact_days').select('date, mark').eq('pact_code', code).eq('user_id', partnerId);
   if (error) throw error;
-  const byDate = new Map((rows ?? []).map((r) => [String(r.date), r.mark as 'kept' | 'missed']));
+  const byDate = new Map((rows ?? []).map((r) => [String(r.date), r.mark as 'kept' | 'missed' | 'paused']));
   const lastFourteen = Array.from({ length: 14 }, (_, i) => {
     const date = addDays(today, i - 13);
     return { date, mark: byDate.get(date) ?? null };

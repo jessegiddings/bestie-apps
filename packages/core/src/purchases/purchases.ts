@@ -4,9 +4,8 @@ import { Platform } from 'react-native';
  * Subscriptions and one-time unlocks through RevenueCat, shared by every app. Each app passes its
  * own products and entitlement id.
  *
- * The RevenueCat SDK is native-only and needs a key. On web, in tests and without keys this runs
- * in MOCK MODE: purchases flip local state and the UI labels them as simulated. No live charge can
- * happen from that path.
+ * Real billing requires a native build and a key. Missing configuration fails closed.
+ * Simulated purchases require an explicit development-only preview flag.
  */
 export type Period = 'week' | 'month' | 'year' | 'lifetime';
 
@@ -22,6 +21,8 @@ export interface PurchasesConfig {
   entitlement: string;
   products: readonly ProductDef[];
   keys?: { ios?: string; android?: string };
+  /** Explicit development-only preview. Never enabled by missing credentials. */
+  preview?: boolean;
 }
 
 export interface Entitlement {
@@ -56,7 +57,7 @@ export function billingCopy(p: ProductDef): string {
 
 /** Re-check an entitlement at `nowIso`; expiry is enforced here so it also works offline. */
 export function evaluate(e: Entitlement, nowIso: string): Entitlement {
-  if (!e.productId) return { ...FREE };
+  if (!e.active || !e.productId) return { ...FREE };
   const ok = e.expiresAt == null || Date.parse(e.expiresAt) > Date.parse(nowIso);
   return ok ? { ...e, active: true } : { ...FREE };
 }
@@ -73,7 +74,8 @@ type ActiveMap = Record<string, { expirationDate?: string | null; productIdentif
 
 export function createPurchases(config: PurchasesConfig) {
   const key = Platform.OS === 'ios' ? config.keys?.ios : Platform.OS === 'android' ? config.keys?.android : undefined;
-  const enabled = Platform.OS !== 'web' && Boolean(key);
+  const simulated = config.preview === true && typeof __DEV__ !== 'undefined' && __DEV__;
+  const enabled = !simulated && Platform.OS !== 'web' && Boolean(key);
 
   async function rc(): Promise<PurchasesModule['default'] | null> {
     if (!enabled) return null;
@@ -89,7 +91,23 @@ export function createPurchases(config: PurchasesConfig) {
 
   return {
     enabled,
+    simulated,
     products: config.products,
+
+    async prices(): Promise<Record<string, string>> {
+      const Purchases = await rc();
+      if (!Purchases) return {};
+      const offerings = await Purchases.getOfferings();
+      return Object.fromEntries((offerings.current?.availablePackages ?? []).map(p => [p.product.identifier, p.product.priceString]));
+    },
+
+    async subscribe(listener: (e: Entitlement) => void): Promise<() => void> {
+      const Purchases = await rc();
+      if (!Purchases) return () => undefined;
+      const handler = (info: { entitlements: { active: ActiveMap } }) => listener(parse(info.entitlements.active));
+      Purchases.addCustomerInfoUpdateListener(handler);
+      return () => Purchases.removeCustomerInfoUpdateListener(handler);
+    },
 
     async configure(appUserId?: string): Promise<void> {
       const Purchases = await rc();
@@ -108,9 +126,11 @@ export function createPurchases(config: PurchasesConfig) {
     async purchase(productId: string): Promise<PurchaseResult> {
       const product = config.products.find((p) => p.id === productId);
       if (!product) return { ok: false, error: 'Unknown product' };
-      const Purchases = await rc();
-      if (!Purchases) return { ok: true, entitlement: mockEntitlement(product, new Date().toISOString()), simulated: true };
       try {
+        const Purchases = await rc();
+        if (!Purchases) return simulated
+          ? { ok: true, entitlement: mockEntitlement(product, new Date().toISOString()), simulated: true }
+          : { ok: false, error: 'Purchases are not configured in this build.' };
         const offerings = await Purchases.getOfferings();
         const pkg = offerings.current?.availablePackages.find((p) => p.product.identifier === productId);
         if (!pkg) return { ok: false, error: 'This plan is not available right now' };

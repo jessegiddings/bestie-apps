@@ -3,7 +3,8 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 import { Linking } from 'react-native';
 import { HELPLINE, SAFETY_NOTE } from '@/content/brand';
-import { scheduleCheckIn } from '@/services/notifications';
+import { leavePact } from '@/services/buddy';
+import { cancelCheckIn, scheduleCheckIn } from '@/services/notifications';
 import { useDry } from '@/state/store';
 import { Body, Button, Card, Chip, H1, H2, Row, Screen, styles as kit } from '@/ui/kit';
 import { colors, space } from '@/ui/theme';
@@ -15,6 +16,8 @@ export default function Settings() {
   const updatePlan = useDry((s) => s.updatePlan);
   const reset = useDry((s) => s.reset);
   const muted = useVoice((s) => s.muted);
+  const [message, setMessage] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
   const [confirm, setConfirm] = useState(false);
 
   return (
@@ -30,12 +33,14 @@ export default function Settings() {
               selected={plan?.checkInHour === h}
               onPress={() => {
                 updatePlan({ checkInHour: h });
-                void scheduleCheckIn(h).catch(() => undefined);
+                void scheduleCheckIn(h).then(result => { updatePlan({ remindersEnabled: result === 'scheduled' }); setMessage(result === 'scheduled' ? 'Reminder set.' : 'Notifications are unavailable or permission was denied. You can enable them in iPhone Settings.'); }).catch(() => setMessage('Could not set the reminder. Please try again.'));
               }}
             />
           ))}
         </Row>
+        <Button title="Turn reminders off" kind="ghost" onPress={() => void cancelCheckIn().then(() => { updatePlan({ remindersEnabled: false }); setMessage('Reminders are off.'); }).catch(() => setMessage('Could not turn off reminders. Please try again.'))} />
       </Card>
+      {message ? <Body>{message}</Body> : null}
       <Card>
         <H2>Sound</H2>
         <Button title={muted ? 'Turn her voice on' : 'Mute her voice (show words only)'} kind="secondary" style={{ marginTop: space.md }} onPress={() => setMuted(!muted)} />
@@ -49,15 +54,24 @@ export default function Settings() {
       <Button title="Premium" kind="secondary" onPress={() => router.push('/premium')} />
       {confirm ? (
         <Card>
-          <Body>This erases every logged day and your plan on this phone. It can't be undone.</Body>
+          <Body>This erases your journal and plan, turns off reminders, and ends your buddy pair, removing its shared history for both people. It can’t be undone. Store subscriptions are not cancelled.</Body>
           <Button
             title="Yes, start over"
             kind="coral"
             style={{ marginTop: space.md }}
-            onPress={() => {
-              reset();
-              router.replace('/onboarding');
-            }}
+            disabled={busy}
+            onPress={() => void (async () => {
+              setBusy(true); setMessage(null);
+              try {
+                const pact = useDry.getState().pact;
+                if (pact) await leavePact(pact.code);
+                await cancelCheckIn();
+                const entitlement = useDry.getState().entitlement;
+                reset(); useDry.getState().setEntitlement(entitlement);
+                router.replace('/onboarding');
+              } catch { setMessage('Could not remove shared data. Reconnect and try again; your journal has been kept.'); }
+              finally { setBusy(false); }
+            })()}
           />
           <Button title="Keep my data" kind="ghost" onPress={() => setConfirm(false)} />
         </Card>

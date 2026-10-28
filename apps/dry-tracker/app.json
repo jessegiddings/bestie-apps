@@ -5,8 +5,8 @@
     "version": "0.1.0",
     "scheme": "dryandmighty",
     "orientation": "portrait",
-    "userInterfaceStyle": "dark",
-    "backgroundColor": "#100E1A",
+    "userInterfaceStyle": "light",
+    "backgroundColor": "#F7F7F0",
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": false,
@@ -18,7 +18,7 @@
     "android": {
       "package": "app.bestie.dryandmighty",
       "adaptiveIcon": {
-        "backgroundColor": "#100E1A"
+        "backgroundColor": "#F7F7F0"
       }
     },
     "web": {
@@ -32,13 +32,13 @@
       [
         "expo-notifications",
         {
-          "color": "#F7B58F"
+          "color": "#315C46"
         }
       ],
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#100E1A"
+          "backgroundColor": "#F7F7F0"
         }
       ]
     ],

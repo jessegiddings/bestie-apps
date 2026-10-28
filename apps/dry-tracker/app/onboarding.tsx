@@ -20,7 +20,7 @@ export default function Onboarding() {
   const setPlan = useDry((s) => s.setPlan);
   const now = today();
   const [step, setStep] = useState(0);
-  const [start, setStart] = useState<string>(now < JAN_1 ? JAN_1 : now);
+  const [start, setStart] = useState<string>(now);
   const [challengeDays, setChallengeDays] = useState<ChallengeDays>(31);
   const [perWeek, setPerWeek] = useState('10');
   const [cost, setCost] = useState('8');
@@ -36,7 +36,8 @@ export default function Onboarding() {
       checkInHour: hour,
       why: why.trim(),
     });
-    await scheduleCheckIn(hour).catch(() => 'denied');
+    const result = await scheduleCheckIn(hour).catch(() => 'denied');
+    useDry.getState().updatePlan({ remindersEnabled: result === 'scheduled' });
     router.replace('/');
   };
 
@@ -51,10 +52,9 @@ export default function Onboarding() {
       {step === 0 && (
         <>
           <Label color={colors.accent}>{APP_NAME.toUpperCase()}</Label>
-          <H1>Let's take a break from drinking, together.</H1>
+          <H1>{'A fresh start.\nA little support.'}</H1>
           <Body>
-            Every evening {HOST_NAME} checks in with a short voice note. When a craving hits, she's one tap away. Pair up with a friend or partner and you'll see each other's
-            days.
+            Make a little room for clearer mornings. Track your dry days, check in with yourself, and take it one day at a time.
           </Body>
           <Card tint={colors.coralSoft}>
             <Label color={colors.coral}>BEFORE YOU START</Label>
@@ -63,7 +63,8 @@ export default function Onboarding() {
               {HELPLINE.name}: {HELPLINE.phone}. {HELPLINE.note}
             </Body>
           </Card>
-          <Button title="Sounds good" onPress={() => setStep(1)} />
+          <Body muted style={kit.small}>Test preview · voice notes currently show draft scripts.</Body>
+          <Button title="Make it your own" onPress={() => setStep(1)} />
         </>
       )}
 
@@ -82,8 +83,7 @@ export default function Onboarding() {
             ))}
           </View>
           <Body muted>
-            You finish on {shortLabel(addDays(start, challengeDays - 1))}. Finish early and you roll straight into the next one. You also get pause passes for planned nights like a
-            wedding, and those never break your run.
+            Aim for {challengeDays} dry days, as early as {shortLabel(addDays(start, challengeDays - 1))}. Pauses and days with a drink don’t count toward this goal. A pause preserves your challenge run; it doesn’t mean consecutive sober days.
           </Body>
           <Button title="Next" onPress={() => setStep(2)} />
         </>
@@ -109,7 +109,7 @@ export default function Onboarding() {
             ))}
           </Row>
           <H1>Why are you doing this?</H1>
-          <Body muted>Optional. She'll remind you on the hard nights.</Body>
+          <Body muted>Optional. Keep your reason close on the harder days.</Body>
           <TextInput
             value={why}
             onChangeText={setWhy}

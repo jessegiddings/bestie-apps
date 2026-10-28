@@ -5,6 +5,7 @@ import { Pressable, Text, View } from 'react-native';
 import { MOODS, TREATS } from '@/content/moods';
 import { weekday } from '@/state/badges';
 import { CHALLENGES, computeStats } from '@/state/stats';
+import { useToday } from '@/state/lifecycle';
 import { today, useDry } from '@/state/store';
 import { Body, Button, Card, H1, H2, Label, Row, Screen, Stat } from '@/ui/kit';
 import { colors, fonts, radius, space } from '@/ui/theme';
@@ -18,7 +19,7 @@ export default function Journey() {
   const days = useDry((s) => s.days);
   const logDay = useDry((s) => s.logDay);
   const clearDay = useDry((s) => s.clearDay);
-  const now = today();
+  const now = useToday();
   const [picked, setPicked] = useState<LocalDate | null>(null);
   if (!plan) return <Redirect href="/onboarding" />;
 
@@ -49,7 +50,7 @@ export default function Journey() {
           <View style={{ width: `${pct * 100}%`, height: '100%', borderRadius: 5, backgroundColor: colors.accent }} />
         </View>
         <Body muted style={{ fontSize: 13, marginTop: space.sm }}>
-          {stats.started ? `Finish line: ${shortLabel(stats.finishDate)}.` : `Starts ${shortLabel(plan.startDate)}.`}
+          {stats.started ? `Earliest finish: ${shortLabel(stats.finishDate)}.` : `Starts ${shortLabel(plan.startDate)}.`}
           {stats.finished.length ? ` Finished: ${stats.finished.map((d) => CHALLENGES.find((c) => c.days === d)?.name).join(', ')}.` : ''}
         </Body>
       </Card>

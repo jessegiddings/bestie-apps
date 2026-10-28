@@ -4,17 +4,19 @@ import { Share, Text, View } from 'react-native';
 import { APP_NAME } from '@/content/brand';
 import { ALL_BADGES, MILESTONES, MOMENTS, earnedBadges, type Badge } from '@/state/badges';
 import { computeStats } from '@/state/stats';
+import { useToday } from '@/state/lifecycle';
 import { today, useDry } from '@/state/store';
 import { BadgeArt, BadgeTile, Body, Button, Card, H1, H2, Label, Row, Screen, TIER_LABEL } from '@/ui/kit';
 import { colors, fonts, space } from '@/ui/theme';
 
 export default function Badges() {
+  const date = useToday();
   const st = useDry();
   const { plan, days, cravingsBeaten, quests, heard, pact } = st;
-  const stats = plan ? computeStats(plan, days, today()) : null;
+  const stats = plan ? computeStats(plan, days, date) : null;
   const earned = useMemo(
-    () => new Set(stats ? earnedBadges({ dryDays: stats.dryDays, days, cravingsBeaten, questsDone: Object.keys(quests).length, heard, paired: Boolean(pact?.buddyName) }) : []),
-    [stats, days, cravingsBeaten, quests, heard, pact],
+    () => new Set([...st.earned, ...(stats ? earnedBadges({ dryDays: stats.dryDays, days, cravingsBeaten, questsDone: Object.keys(quests).length, heard, paired: Boolean(pact?.buddyName) }) : [])]),
+    [stats, days, cravingsBeaten, quests, heard, pact, st.earned],
   );
   const [selected, setSelected] = useState<Badge | null>(null);
   if (!plan || !stats) return <Redirect href="/onboarding" />;
