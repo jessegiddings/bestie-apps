@@ -1,4 +1,5 @@
 import { registerClips, type Clip } from '@bestie/core';
+import { demoFor } from './demoVoices';
 import type { GameId, Rng } from '@/game/night';
 import { pick } from '@/game/night';
 
@@ -8,7 +9,7 @@ import { pick } from '@/game/night';
  * `asset: require('../../assets/voice/<id>.m4a')` on the entry. Player names are never spoken,
  * so lines say "you" while the screen shows the name.
  */
-const line = (id: string, text: string, priority: Clip['priority'] = 2): Clip => ({ id, text, asset: null, priority });
+const line = (id: string, text: string, priority: Clip['priority'] = 2): Clip => { const demo = demoFor(id); return { id, text: demo?.text ?? text, asset: demo?.asset ?? null, priority }; };
 
 export const OPENERS = [
   line('open-1', 'Okay, phones down. Except this one. Hannah here. Lamorne and I are your hosts: five games, one crown, and I am not above playing favourites.'),
@@ -121,6 +122,8 @@ export function allHostLines(): Clip[] {
 
 /** Recording assignments; captions never imply an unrecorded voice is playing. */
 export function speakerFor(id: string): 'Hannah' | 'Lamorne' {
+  const demo = demoFor(id) ?? demoFor(id.replace(/-(hannah|lamorne)$/, ''));
+  if (demo) return demo.male ? 'Lamorne' : 'Hannah';
   if (id.endsWith('-hannah')) return 'Hannah';
   if (id.endsWith('-lamorne')) return 'Lamorne';
   return id === 'countdown' || id.endsWith('-2') ? 'Lamorne' : 'Hannah';

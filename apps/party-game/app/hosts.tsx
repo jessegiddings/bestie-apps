@@ -15,8 +15,8 @@ export default function Hosts() {
  const [exit,setExit]=useState(false);
  const q=pack.questions[state.index];
  const score=challengeScore(state,pack.questions);
- const clip=started && state.phase==='reveal' && !pack.demo ? revealId(q):null;
- useEffect(()=>{if(!pack.demo)registerClips(pack.questions.map(q=>({id:revealId(q),text:q.reveal,asset:q.asset})));return ()=>cancel();},[pack]);
+ const clip=started && state.phase==='reveal' ? revealId(q):null;
+ useEffect(()=>{registerClips(pack.questions.map(q=>({id:revealId(q),text:q.reveal,asset:q.asset})));return ()=>cancel();},[pack]);
  useHost(clip);
  const leave=()=>{cancel();router.replace('/');};
  const advance=()=>{cancel();setSelected(null);setState(s=>nextQuestion(s,pack.questions.length));};
@@ -25,7 +25,7 @@ export default function Hosts() {
    <Image source={require('../assets/mess-around-cover.jpeg')} resizeMode="contain" style={{width:180,height:180,borderRadius:20,alignSelf:'center'}} accessibilityLabel="Hannah and Lamorne, The Mess Around"/>
    <H2>Play against Hannah & Lamorne</H2>
    <Body>You’re one team. Agree on an answer and lock it in. Get it right: your team scores. Get it wrong: the hosts score. Best of five wins.</Body>
-   <Card tint={colors.goldSoft}><Label>{pack.demo?'SAMPLE ROUND · NOT HOST ANSWERS':'RECORDED HOST ROUND'}</Label><Body>{pack.demo?'Try the format with five sample puzzles. These are not Hannah or Lamorne’s answers, stories, or recordings. Their real round will unlock when approved recordings are added.':'Guess their answers, then hear the real reveal. No live connection or microphone needed.'}</Body></Card>
+   <Card tint={colors.goldSoft}><Label>{pack.demo?'SAMPLE ROUND · NOT HOST ANSWERS':'RECORDED HOST ROUND'}</Label><Body>{pack.demo?'Try the format with five sample puzzles. Stock female and male voices read the reveals. These are not Hannah or Lamorne’s voices or personal answers. Their real round will unlock when approved recordings are added.':'Guess their answers, then hear the real reveal. No live connection or microphone needed.'}</Body></Card>
    <Button title={pack.demo?'Try the sample round →':'Take on the hosts →'} onPress={()=>setStarted(true)}/>
    <Body muted>One phone · Solo or as a group · No names needed</Body><Button title="Back to games" kind="ghost" onPress={leave}/>
  </Screen>;
@@ -50,7 +50,7 @@ export default function Hosts() {
         <Label>{state.guesses[state.index]===q.answer?'YOUR TEAM +1':'HOSTS +1'}</Label><H2>{q.options[q.answer]}</H2>
         <Body muted>{`You chose: ${q.options[state.guesses[state.index]]}`}</Body>
       </Card>
-      {pack.demo?<Card><Label>SAMPLE EXPLANATION · NO HOST AUDIO</Label><Body>{q.reveal}</Body></Card>:clip?<HostLine clipId={clip}/>:null}
+      {clip?<HostLine clipId={clip}/>:null}
       <Button title={state.index===pack.questions.length-1?'See the final score':'Next challenge →'} onPress={advance}/>
     </>}
    </>}

@@ -1,3 +1,4 @@
+import { demoFor } from './demoVoices';
 import type { Clip } from '@bestie/core';
 export type Host = 'Hannah' | 'Lamorne';
 export interface HostQuestion {
@@ -20,6 +21,6 @@ export function validQuestion(q: HostQuestion): boolean {
 export function challengePack(source: readonly HostQuestion[] = RECORDED_QUESTIONS) {
  const ids = new Set<string>();
  const ready = source.filter(q=>{if(!q.approved || q.asset == null || !validQuestion(q) || ids.has(q.id)) return false; ids.add(q.id); return true;});
- return ready.length >= 5 ? {demo:false,questions:ready.slice(0,5)} : {demo:true,questions:DEMO_QUESTIONS};
+ return ready.length >= 5 ? {demo:false,questions:ready.slice(0,5)} : {demo:true,questions:DEMO_QUESTIONS.map(q=>({...q, asset:demoFor(`challenge-${q.id}`)?.asset ?? null, reveal:demoFor(`challenge-${q.id}`)?.text ?? q.reveal}))};
 }
 export const revealId = (q: HostQuestion) => `challenge-${q.id}-${q.host.toLowerCase()}`;

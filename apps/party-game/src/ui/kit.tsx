@@ -1,7 +1,8 @@
-import { play, replay, useVoice } from '@bestie/core';
+import { cancel, play, replay, useVoice } from '@bestie/core';
 import { useEffect, type ReactNode } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View, type StyleProp, type TextStyle, type ViewStyle } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { demoFor } from '@/content/demoVoices';
 import { speakerFor } from '@/content/host';
 import { colors, fonts, radius, space, TOUCH_MIN } from './theme';
 
@@ -78,6 +79,7 @@ export function Stat({ value, label }: { value: string; label: string }) {
  * words show with a note that her recording is on its way, never a synthetic voice.
  */
 export function HostLine({ clipId }: { clipId: string }) {
+  const demo = demoFor(clipId) ?? demoFor(clipId.replace(/-(hannah|lamorne)$/, ''));
   const caption = useVoice((s) => s.caption);
   const status = useVoice((s) => s.status);
   const captionOnly = useVoice((s) => s.captionOnly);
@@ -86,13 +88,14 @@ export function HostLine({ clipId }: { clipId: string }) {
     <Card tint={colors.accentSoft}>
       <Row>
         <View style={{ flex: 1 }}>
-          <Label color={colors.accent}>{speakerFor(clipId).toUpperCase()}</Label>
+          <Label color={colors.accent}>{demo ? `${demo.male ? 'MALE' : 'FEMALE'} DEMO VOICE` : speakerFor(clipId).toUpperCase()}</Label>
         </View>
         <Pressable accessibilityRole="button" accessibilityLabel="Play that line again" hitSlop={12} onPress={() => (status === 'playing' ? undefined : replay())}>
           <Text style={styles.replay}>{status === 'playing' ? 'Playing…' : 'Replay'}</Text>
         </Pressable>
       </Row>
       <Body style={{ marginTop: space.xs }}>{caption.text}</Body>
+      {demo ? <Body muted style={styles.small}>Synthetic stand-in · not Hannah or Lamorne’s voice.</Body> : null}
       {captionOnly ? <Body muted style={styles.small}>Host script preview · Hannah & Lamorne’s recordings aren’t in this build yet.</Body> : null}
       {status === 'failed' ? <Body muted style={styles.small}>That didn’t play. Tap Replay to try again.</Body> : null}
     </Card>
@@ -103,6 +106,7 @@ export function HostLine({ clipId }: { clipId: string }) {
 export function useHost(clipId: string | null) {
   useEffect(() => {
     if (clipId) play(clipId, { interrupt: true });
+    return () => { if (clipId) cancel(); };
   }, [clipId]);
 }
 
