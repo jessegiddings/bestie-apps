@@ -14,7 +14,6 @@ export function LastWord({ night, player, onDone }: TurnProps) {
   const { paused } = useGamePause();
   const card = useDealtCard<PromptCard>();
   const [step, setStep] = useState<Step>('ready');
-  const [passes, setPasses] = useState(0);
   const fuse = useRef(fuseSeconds() * 1000);
 
   useEffect(() => {
@@ -45,8 +44,7 @@ export function LastWord({ night, player, onDone }: TurnProps) {
       <>
         <Label color={colors.coral}>SAY ONE, THEN PASS</Label>
         <BigCard tint={colors.coralSoft}>{card.text}</BigCard>
-        <Button title={passes === 0 ? 'Passed it' : `Passed it (${passes})`} kind="coral" onPress={() => setPasses((n) => n + 1)} />
-        <Body muted>Tapping is optional. It just feels good.</Body>
+<Body>Say an answer. Pass left. No tapping needed.</Body>
       </>
     );
   }

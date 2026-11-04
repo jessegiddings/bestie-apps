@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { WordCard } from '@/content/decks';
 import { pick, scoreOddOneOut } from '@/game/night';
-import { BigCard, Body, Button, Card, H1, H2, Label, PlayerPicker } from '@/ui/kit';
+import { HostLine, useHost, BigCard, Body, Button, Card, H1, H2, Label, PlayerPicker } from '@/ui/kit';
 import { colors } from '@/ui/theme';
 import { useDealtCard, PassTo, type TurnProps } from './shared';
 
@@ -20,6 +20,9 @@ export function OddOneOut({ night, player, onDone }: TurnProps) {
   const start = night.players.findIndex((p) => p.id === player.id);
   const order = night.players.map((_, i) => night.players[(start + i) % night.players.length]);
   const odd = night.players.find((p) => p.id === oddId)!;
+
+  const reaction = step === 'guess' ? 'react-escape-lamorne' : null;
+  useHost(reaction);
 
   if (!card) return <Body muted>Getting your next card ready…</Body>;
 
@@ -69,7 +72,7 @@ export function OddOneOut({ night, player, onDone }: TurnProps) {
   }
 
   if (step === 'guess') return <>
-    <Label>THE BLUFFER ESCAPED</Label><H2>{`${odd.name}, one chance to name the secret word.`}</H2>
+    <Label>THE BLUFFER ESCAPED</Label>{reaction ? <HostLine clipId={reaction} /> : null}<H2>{`${odd.name}, one chance to name the secret word.`}</H2>
     <Body>Say your guess out loud before anyone reveals it. Everyone who saw the word: was that right?</Body>
     <Button title="Correct guess · +3" kind="good" onPress={() => { setGuessed(true); setStep('result'); }} />
     <Button title="Wrong guess · +2" kind="secondary" onPress={() => { setGuessed(false); setStep('result'); }} />

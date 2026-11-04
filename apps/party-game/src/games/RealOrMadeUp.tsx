@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Text } from 'react-native';
 import type { PromptCard } from '@/content/decks';
 import { scoreRealOrMadeUp, secretFor } from '@/game/night';
-import { BigCard, Body, Button, Card, H2, Label } from '@/ui/kit';
+import { HostLine, useHost, BigCard, Body, Button, Card, H2, Label } from '@/ui/kit';
 import { colors, fonts, space } from '@/ui/theme';
 import { useGamePause, useDealtCard, PassTo, type TurnProps } from './shared';
 
@@ -23,6 +23,9 @@ export function RealOrMadeUp({ night, player, onDone }: TurnProps) {
     return () => clearTimeout(t);
   }, [step, left, paused]);
 
+  const reaction = step === 'result' ? vote !== secret ? 'react-fooled-lamorne' : 'react-caught-hannah' : null;
+  useHost(reaction);
+
   if (!card) return <Body muted>Getting your next card ready…</Body>;
 
   if (step === 'pass') return <PassTo name={player.name} note={`${player.name} is telling the story. Only they see the secret.`} onReady={() => setStep('secret')} />;
@@ -35,9 +38,10 @@ export function RealOrMadeUp({ night, player, onDone }: TurnProps) {
         <Card tint={truth ? colors.goodSoft : colors.coralSoft}>
           <Label color={truth ? colors.good : colors.coral}>YOUR SECRET</Label>
           <H2>{truth ? 'TRUTH. Tell a real one.' : 'MAKE IT UP. Invent the whole thing.'}</H2>
-          <Body muted style={{ marginTop: space.xs }}>{truth ? 'If nothing comes to mind, stretch a real memory. It still counts.' : 'Details sell it. Names, smells, what you were wearing.'}</Body>
+          <Body muted style={{ marginTop: space.xs }}>{truth ? 'Use a real memory. Nothing comes to mind? Skip this turn—no points, no pressure.' : 'Details sell it. Names, smells, what you were wearing.'}</Body>
         </Card>
         <Button title="Hide it, I’m ready" onPress={() => setStep('story')} />
+        <Button title="Skip this turn · no points" kind="ghost" onPress={() => onDone({})} />
       </>
     );
   }
@@ -69,6 +73,7 @@ export function RealOrMadeUp({ night, player, onDone }: TurnProps) {
   return (
     <>
       <Card tint={fooled ? colors.coralSoft : colors.goodSoft}>
+        {reaction ? <HostLine clipId={reaction} /> : null}
         <Label color={fooled ? colors.coral : colors.good}>{fooled ? 'FOOLED YOU' : 'CAUGHT'}</Label>
         <H2>{`It was ${secret === 'truth' ? 'true' : 'made up'}!`}</H2>
         <Body style={{ marginTop: space.xs }}>{fooled ? `${player.name} gets 2 points.` : `Everyone except ${player.name} gets a point.`}</Body>

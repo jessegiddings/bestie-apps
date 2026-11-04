@@ -3,7 +3,7 @@ import { Redirect, router } from 'expo-router';
 import { useMemo, useRef, useState } from 'react';
 import { Modal, Pressable, Text, View } from 'react-native';
 import Svg, { Circle, Path } from 'react-native-svg';
-import { RULES } from '@/content/decks';
+import { HOW_TO, RULES } from '@/content/decks';
 import { choose, CLOSERS, CROWNS, FINAL_ROUND, GAME_INTROS, OPENERS, SCORE_LINES, TIEBREAK } from '@/content/host';
 import { currentGame, leaderIds, multiplier, scoreMood, standings, turnPlayer, turnsFor, type Night } from '@/game/night';
 import { PauseContext, useGamePause } from '@/games/shared';
@@ -101,6 +101,8 @@ function Runner({ night }: { night: Night }) {
           <Body>{`1. ${rules.rules[0]}`}</Body>
           <Body style={{ marginTop: space.sm }}>{`2. ${rules.rules[1]}`}</Body>
         </Card>
+        <Card tint={colors.goldSoft}><Label>FOR EXAMPLE</Label><Body>{HOW_TO[game].example}</Body></Card>
+        <Body muted style={{fontSize:13}}>{HOW_TO[game].scoring}</Body>
         <Button title="Start the round" onPress={beginRound} />
       </Screen>
     );

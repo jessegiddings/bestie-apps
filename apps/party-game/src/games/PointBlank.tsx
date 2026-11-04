@@ -5,7 +5,7 @@ import { Text } from 'react-native';
 import { FORFEITS, type PromptCard } from '@/content/decks';
 import { COUNTDOWN } from '@/content/host';
 import { pick, scorePointBlank } from '@/game/night';
-import { BigCard, Body, Button, Card, H2, Label, PlayerPicker } from '@/ui/kit';
+import { HostLine, useHost, BigCard, Body, Button, Card, H2, Label, PlayerPicker } from '@/ui/kit';
 import { colors, fonts } from '@/ui/theme';
 import { useGamePause, useDealtCard, type TurnProps } from './shared';
 
@@ -31,6 +31,9 @@ export function PointBlank({ night, onDone }: TurnProps) {
     const t = setTimeout(() => setBeat((b) => b + 1), 900);
     return () => clearTimeout(t);
   }, [step, beat, paused]);
+
+  const reaction = step === 'story' ? 'react-story-hannah' : null;
+  useHost(reaction);
 
   if (!card) return <Body muted>Getting your next card ready…</Body>;
 
@@ -70,6 +73,7 @@ export function PointBlank({ night, onDone }: TurnProps) {
     return (
       <>
         <Label color={colors.accent}>{name.toUpperCase()}</Label>
+        {reaction ? <HostLine clipId={reaction} /> : null}
         <H2>{`${name}, tell us why. Or don’t, and take a forfeit.`}</H2>
         <Button title={`${name} told the story (+1)`} kind="good" onPress={() => onDone(scorePointBlank(pointed, true))} />
         <Button title="They’re passing" kind="secondary" onPress={() => setStep('forfeit')} />

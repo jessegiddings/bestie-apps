@@ -13,7 +13,7 @@ const line = (id: string, text: string, priority: Clip['priority'] = 2): Clip =>
 export const OPENERS = [
   line('open-1', 'Okay, phones down. Except this one. Hannah here. Lamorne and I are your hosts: five games, one crown, and I am not above playing favourites.'),
   line('open-2', 'Welcome, welcome! Find a comfy seat and somebody you trust a little less than everyone else. Let’s play.'),
-  line('open-3', 'Hi, hello, it’s game night and Lamorne here. Hannah says she’s in charge. We’ll see. Five rounds, the last one counts double, and the winner gets crowned by us personally.'),
+  line('open-3', 'Hi, hello, Hannah here. It’s game night and I’m in charge. Lamorne may have opinions. Five rounds, the last one counts double, and the winner gets crowned by us personally.'),
 ];
 
 export const GAME_INTROS: Record<GameId, Clip[]> = {
@@ -86,8 +86,19 @@ export const CLOSERS = [
   line('close-2', 'Thank you for having me. Be nice to the loser. Okay, a little nice.'),
 ];
 
+/** Proposed reactions, triggered only after public outcomes. No recordings yet. */
+export const REACTIONS = [
+  line('react-story-hannah', 'There is clearly a story here. We’re listening.'),
+  line('react-match-lamorne', 'Okay, you actually know each other. I respect it.'),
+  line('react-miss-hannah', 'You were so confident. That’s what makes this special.'),
+  line('react-fooled-lamorne', 'You bought that? Every word? Incredible.'),
+  line('react-caught-hannah', 'Caught. The details were doing a little too much.'),
+  line('react-escape-lamorne', 'You got away with it. Now, do you actually know the word?'),
+];
+
 export function registerHostClips(): void {
   registerClips([
+    ...REACTIONS,
     ...OPENERS,
     ...Object.values(GAME_INTROS).flat(),
     COUNTDOWN,
@@ -105,10 +116,12 @@ export function choose(list: readonly Clip[], rng?: Rng): Clip {
 }
 
 export function allHostLines(): Clip[] {
-  return [...OPENERS, ...Object.values(GAME_INTROS).flat(), COUNTDOWN, ...TIME_UP, ...Object.values(SCORE_LINES).flat(), ...FINAL_ROUND, ...TIEBREAK, ...CROWNS, ...CLOSERS];
+  return [...REACTIONS, ...OPENERS, ...Object.values(GAME_INTROS).flat(), COUNTDOWN, ...TIME_UP, ...Object.values(SCORE_LINES).flat(), ...FINAL_ROUND, ...TIEBREAK, ...CROWNS, ...CLOSERS];
 }
 
 /** Recording assignments; captions never imply an unrecorded voice is playing. */
 export function speakerFor(id: string): 'Hannah' | 'Lamorne' {
+  if (id.endsWith('-hannah')) return 'Hannah';
+  if (id.endsWith('-lamorne')) return 'Lamorne';
   return id === 'countdown' || id.endsWith('-2') ? 'Lamorne' : 'Hannah';
 }

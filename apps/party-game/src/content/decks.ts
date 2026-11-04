@@ -314,3 +314,12 @@ export function toYou(question: string): string {
     .replace(/\bthey\b/g, 'you')
     .replace(/\bthem\b/g, 'you');
 }
+
+/** Short public examples; these never disclose a live secret. */
+export const HOW_TO: Record<GameId, { example: string; scoring: string }> = {
+ 'point-blank': { example: '“Who would argue with a GPS?” Count down, then everyone points together.', scoring: 'Most-pointed player: tell the story for +1, or pass for 0. A tied vote skips the turn.' },
+ 'bestie-test': { example: 'Alex secretly picks “Dessert first.” The group tries to guess Alex’s answer.', scoring: 'Match: everyone +1. Miss: 0. This is a cooperative round; the gaps between scores stay the same.' },
+ 'odd-one-out': { example: 'If the word were “Beach,” a clue could be “Sand.” The bluffer hears the category, not the word.', scoring: 'Caught: everyone else +1. Escape: bluffer +2, plus 1 for guessing before the reveal. If the vote ties, discuss and choose one suspect.' },
+ 'real-or-made-up': { example: '“A disastrous holiday.” Only the storyteller knows whether their instructions say truth or fiction.', scoring: 'Fool the group: storyteller +2. Get caught: everyone else +1. Agree on one group vote.' },
+ 'last-word': { example: 'Category: fruit. “Apple.” Pass left. “Banana.” Pass left. Keep going until time runs out.', scoring: 'Everyone except the final holder +1. Repeated or wrong answer? Keep holding the phone until you give a valid one.' },
+};

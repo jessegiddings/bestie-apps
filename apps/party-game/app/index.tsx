@@ -1,7 +1,7 @@
 import { setMuted, useVoice } from '@bestie/core';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { Image, Pressable, Text, View, useWindowDimensions } from 'react-native';
 import { NIGHT_ORDER, type GameId } from '@/game/night';
 import { useParty } from '@/state/store';
 import { Body, Button, Card, Chip, Label, Row, Screen } from '@/ui/kit';
@@ -9,6 +9,8 @@ import { GameArt, GAME_LOOK } from '@/ui/GameArt';
 import { colors, fonts } from '@/ui/theme';
 
 export default function Home() {
+ const { width } = useWindowDimensions();
+ const coverSize = Math.min(width, 560) - 48;
  const st=useParty(); const muted=useVoice(s=>s.muted);
  const [count,setCount]=useState(Math.max(3,st.players.length));
  const [replace,setReplace]=useState<{game?:GameId}|null>(null);
@@ -17,10 +19,9 @@ export default function Home() {
  const go=(game?:GameId)=>active?setReplace({game}):begin(game);
  return <Screen>
   <Row><View style={{flex:1}}><Label color={colors.ink}>A LITTLE CHAOS. GREAT COMPANY.</Label></View><Pressable accessibilityRole="switch" accessibilityLabel="Host sound" accessibilityState={{checked:!muted}} onPress={()=>setMuted(!muted)} style={{minHeight:44,justifyContent:'center'}}><Text style={{fontFamily:fonts.bold,color:colors.accent,fontSize:11}}>{muted?'SOUND OFF':'SOUND ON'}</Text></Pressable></Row>
-  <View style={{gap:14}}>
-   <Text accessibilityRole="header" style={{fontFamily:fonts.bold,fontSize:58,lineHeight:56,letterSpacing:-3,color:colors.ink}}>THE MESS<Text style={{color:colors.accent}}>{'\nAROUND.'}</Text></Text>
-   <Row><View style={{backgroundColor:colors.lime,borderRadius:20,paddingHorizontal:12,paddingVertical:8,transform:[{rotate:'-2deg'}]}}><Text style={{fontFamily:fonts.bold,fontSize:11,color:colors.ink}}>WITH HANNAH + LAMORNE</Text></View></Row>
-   <Body muted>One phone. Your favorite people. Absolutely no dignity required.</Body>
+  <View style={{gap:10}}>
+   <Image source={require('../assets/mess-around-cover.jpeg')} accessibilityLabel="The Mess Around with Hannah Simone and Lamorne Morris" resizeMode="contain" style={{width:coverSize,height:coverSize,borderRadius:20}} />
+   <Body muted style={{textAlign:'center',fontSize:13}}>The podcast chemistry. Your game night.</Body>
   </View>
   {active?<Button title="Continue playing →" onPress={()=>router.push('/night')}/>:null}
   <View style={{backgroundColor:colors.ink,borderRadius:24,padding:20,gap:16}}>

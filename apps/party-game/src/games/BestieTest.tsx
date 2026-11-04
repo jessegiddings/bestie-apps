@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { View } from 'react-native';
 import { toYou, type ChoiceCard } from '@/content/decks';
 import { scoreBestieTest } from '@/game/night';
-import { BigCard, Body, Button, Card, Chip, H2, Label } from '@/ui/kit';
+import { HostLine, useHost, BigCard, Body, Button, Card, Chip, H2, Label } from '@/ui/kit';
 import { colors, space } from '@/ui/theme';
 import { useDealtCard, PassTo, type TurnProps } from './shared';
 
@@ -13,6 +13,9 @@ export function BestieTest({ night, player, onDone }: TurnProps) {
   const [step, setStep] = useState<Step>('pass');
   const [answer, setAnswer] = useState<number | null>(null);
   const [guess, setGuess] = useState<number | null>(null);
+
+  const reaction = step === 'result' ? answer === guess ? 'react-match-lamorne' : 'react-miss-hannah' : null;
+  useHost(reaction);
 
   if (!card) return <Body muted>Getting your next card ready…</Body>;
 
@@ -52,6 +55,7 @@ export function BestieTest({ night, player, onDone }: TurnProps) {
   return (
     <>
       <Card tint={match ? colors.goodSoft : colors.coralSoft}>
+        {reaction ? <HostLine clipId={reaction} /> : null}
         <Label color={match ? colors.good : colors.coral}>{match ? 'BESTIES CONFIRMED' : 'DO YOU EVEN KNOW THEM?'}</Label>
         <H2>{`${player.name} picked “${card.options[answer!]}”.`}</H2>
         {!match ? <Body style={{ marginTop: space.xs }}>{`You guessed “${card.options[guess!]}”.`}</Body> : null}

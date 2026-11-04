@@ -1,10 +1,10 @@
 export const colors = {
-  "ground": "#FFF8E9",
+  "ground": "#EDE6D7",
   "surface": "#FFFFFF",
   "line": "#E4D9C6",
   "ink": "#23201F",
   "muted": "#72675F",
-  "accent": "#4826B5",
+  "accent": "#344FC4",
   "accentSoft": "#EAE1FF",
   "gold": "#716411",
   "goldSoft": "#FFF0B3",
