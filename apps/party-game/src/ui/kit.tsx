@@ -75,8 +75,7 @@ export function Stat({ value, label }: { value: string; label: string }) {
 }
 
 /**
- * What the host just said, shown as a caption with a replay button. Until a line is recorded the
- * words show with a note that her recording is on its way, never a synthetic voice.
+ * Host captions and replay. Temporary voice disclosure lives on the home screen.
  */
 export function HostLine({ clipId }: { clipId: string }) {
   const demo = demoFor(clipId) ?? demoFor(clipId.replace(/-(hannah|lamorne)$/, ''));
@@ -88,15 +87,14 @@ export function HostLine({ clipId }: { clipId: string }) {
     <Card tint={colors.accentSoft}>
       <Row>
         <View style={{ flex: 1 }}>
-          <Label color={colors.accent}>{demo ? `${demo.male ? 'MALE' : 'FEMALE'} DEMO VOICE` : speakerFor(clipId).toUpperCase()}</Label>
+          <Label color={colors.accent}>{demo ? 'YOUR HOSTS' : speakerFor(clipId).toUpperCase()}</Label>
         </View>
         <Pressable accessibilityRole="button" accessibilityLabel="Play that line again" hitSlop={12} onPress={() => (status === 'playing' ? undefined : replay())}>
           <Text style={styles.replay}>{status === 'playing' ? 'Playing…' : 'Replay'}</Text>
         </Pressable>
       </Row>
       <Body style={{ marginTop: space.xs }}>{caption.text}</Body>
-      {demo ? <Body muted style={styles.small}>Synthetic stand-in · not Hannah or Lamorne’s voice.</Body> : null}
-      {captionOnly ? <Body muted style={styles.small}>Host script preview · Hannah & Lamorne’s recordings aren’t in this build yet.</Body> : null}
+      {captionOnly ? <Body muted style={styles.small}>Captions only for this line.</Body> : null}
       {status === 'failed' ? <Body muted style={styles.small}>That didn’t play. Tap Replay to try again.</Body> : null}
     </Card>
   );

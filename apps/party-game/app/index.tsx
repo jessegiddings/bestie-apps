@@ -1,10 +1,10 @@
-import { play, setMuted, useVoice } from '@bestie/core';
+import { setMuted, useVoice } from '@bestie/core';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { Image, Pressable, Text, View, useWindowDimensions } from 'react-native';
 import { NIGHT_ORDER, type GameId } from '@/game/night';
 import { useParty } from '@/state/store';
-import { Body, Button, Card, Chip, HostLine, Label, Row, Screen } from '@/ui/kit';
+import { Body, Button, Card, Chip, Label, Row, Screen } from '@/ui/kit';
 import { GameArt, GAME_LOOK } from '@/ui/GameArt';
 import { colors, fonts } from '@/ui/theme';
 
@@ -12,8 +12,6 @@ export default function Home() {
  const { width } = useWindowDimensions();
  const coverSize = Math.min(width, 560) - 48;
  const st=useParty(); const muted=useVoice(s=>s.muted);
- const [sample,setSample]=useState<string|null>(null);
- const previewVoice=(id:string)=>{setMuted(false);setSample(id);play(id,{interrupt:true});};
  const [count,setCount]=useState(Math.max(3,st.players.length));
  const [replace,setReplace]=useState<{game?:GameId}|null>(null);
  const active=st.night && st.night.phase!=='crowned';
@@ -25,7 +23,6 @@ export default function Home() {
    <Image source={require('../assets/mess-around-cover.jpeg')} accessibilityLabel="The Mess Around with Hannah Simone and Lamorne Morris" resizeMode="contain" style={{width:coverSize,height:coverSize,borderRadius:20}} />
    <Body muted style={{textAlign:'center',fontSize:13}}>The podcast chemistry. Your game night.</Body>
   </View>
-  <View style={{gap:8}}><Label>STOCK SYNTHETIC VOICES · NOT HANNAH OR LAMORNE</Label><Row><Button title="Hear female demo" kind="secondary" style={{flex:1,paddingHorizontal:8}} onPress={()=>previewVoice('intro-point-blank-1')}/><Button title="Hear male demo" kind="secondary" style={{flex:1,paddingHorizontal:8}} onPress={()=>previewVoice('intro-last-word-1')}/></Row>{sample?<HostLine clipId={sample}/>:null}</View>
   {active?<Button title="Continue playing →" onPress={()=>router.push('/night')}/>:null}
   <View style={{backgroundColor:colors.ink,borderRadius:24,padding:20,gap:16}}>
    <Row><View style={{flex:1,gap:4}}><Label color="#FFD85B">QUICK PLAY</Label><Text style={{fontFamily:fonts.bold,fontSize:20,color:'white'}}>How many of you?</Text></View><Pressable accessibilityRole="button" accessibilityLabel="Fewer players" disabled={count<=3} onPress={()=>setCount(count-1)} style={{padding:12}}><Text style={{color:count<=3?'#81766D':'white',fontSize:26}}>−</Text></Pressable><Text accessibilityLiveRegion="polite" style={{color:'white',fontFamily:fonts.bold,fontSize:28}}>{count}</Text><Pressable accessibilityRole="button" accessibilityLabel="More players" disabled={count>=10} onPress={()=>setCount(count+1)} style={{padding:12}}><Text style={{color:count>=10?'#81766D':'white',fontSize:26}}>+</Text></Pressable></Row>
@@ -41,6 +38,6 @@ export default function Home() {
   <Button title="Play all five · The full mess →" kind="secondary" onPress={()=>go()}/>
   <Row><View style={{flex:1,gap:4}}><Label>YOUR CROWD</Label><Body muted style={{fontSize:12}}>Family is free. Friends gets cheekier.</Body></View></Row>
   <Row><Chip label="Family" selected={st.deck==='family'} onPress={()=>st.setDeck('family')}/><Chip label={st.isVip()?'Friends':'Friends · VIP'} selected={st.deck==='friends'} onPress={()=>st.isVip()?st.setDeck('friends'):router.push('/premium')}/></Row>
-  <Body muted style={{fontSize:11,textAlign:'center'}}>SYNTHETIC DEMO VOICES · NOT THE HOSTS’ VOICES</Body>
+  <Body muted style={{fontSize:11,textAlign:'center'}}>Preview uses temporary synthetic voices, not Hannah or Lamorne’s recordings.</Body>
  </Screen>;
 }
