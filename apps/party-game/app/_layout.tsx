@@ -56,6 +56,7 @@ export default function RootLayout() {
       <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.ground } }}>
         <Stack.Screen name="index" />
         <Stack.Screen name="players" />
+        <Stack.Screen name="hosts" options={{ gestureEnabled: false }} />
         <Stack.Screen name="night" options={{ gestureEnabled: false }} />
         <Stack.Screen name="premium" options={{ presentation: 'modal' }} />
       </Stack>
