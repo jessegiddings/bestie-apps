@@ -14,7 +14,7 @@ void SplashScreen.preventAutoHideAsync().catch(() => undefined);
 registerHostClips();
 
 export default function RootLayout() {
-  const [hydrated, setHydrated] = useState(useParty.persist.hasHydrated());
+  const [hydrated, setHydrated] = useState(false);
   useEffect(() => {
     const off = useParty.persist.onFinishHydration(() => setHydrated(true));
     setHydrated(useParty.persist.hasHydrated());
