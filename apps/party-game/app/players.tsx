@@ -25,8 +25,8 @@ export default function Players() {
 
   return (
     <Screen>
-      <Label color={colors.accent}>01 / THE GUEST LIST</Label>
-      <H1>{'Get your people\nto the table.'}</H1>
+      <Label color={colors.accent}>MAKE IT PERSONAL</Label>
+      <H1>{'Names optional.\nNicknames encouraged.'}</H1>
       <Body muted>{`${MIN_PLAYERS} to ${MAX_PLAYERS} players. First names or nicknames are perfect.`}</Body>
 
       <Row>
@@ -69,7 +69,7 @@ export default function Players() {
           router.replace('/night');
         } else router.back();
       }} />
-      <Button title="Back to the lounge" kind="ghost" onPress={() => router.back()} />
+      <Button title="Back to the games" kind="ghost" onPress={() => router.back()} />
     </Screen>
   );
 }

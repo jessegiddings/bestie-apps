@@ -1,44 +1,41 @@
 import { setMuted, useVoice } from '@bestie/core';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, Text, View, useWindowDimensions } from 'react-native';
-import { DECKS, RULES } from '@/content/decks';
-import { MIN_PLAYERS, NIGHT_ORDER, type GameId } from '@/game/night';
+import { Pressable, Text, View } from 'react-native';
+import { NIGHT_ORDER, type GameId } from '@/game/night';
 import { useParty } from '@/state/store';
-import { Body, Button, Card, Chip, H2, Label, Row, Screen } from '@/ui/kit';
+import { Body, Button, Card, Chip, Label, Row, Screen } from '@/ui/kit';
+import { GameArt, GAME_LOOK } from '@/ui/GameArt';
 import { colors, fonts } from '@/ui/theme';
 
-const GAME_TAGS = ['POINT & VOTE', 'HOW WELL DO YOU KNOW THEM?', 'SPOT THE BLUFFER', 'FACT OR FICTION?', 'THINK FAST'];
 export default function Home() {
-  const { width } = useWindowDimensions();
-  const st = useParty();
-  const { players, deck, night } = st;
-  const vip = st.isVip();
-  const muted = useVoice(s => s.muted);
-  const ready = players.length >= MIN_PLAYERS;
-  const [replacement, setReplacement] = useState<{ single?: GameId } | null>(null);
-  const active = night && night.phase !== 'crowned';
-  const begin = (single?: GameId) => {
-    if (!ready) return router.push(single ? `/players?game=${single}` : '/players?game=night');
-    if (DECKS.find(d => d.id === deck)?.vip && !vip) st.setDeck('family');
-    st.start(single); setReplacement(null); router.push('/night');
-  };
-  const go = (single?: GameId) => active ? setReplacement({ single }) : begin(single);
-  return <Screen>
-    <Row><View style={{ flex: 1 }}><Label>BESTIE NIGHT</Label></View><Pressable accessibilityRole="switch" accessibilityLabel="Host sound" accessibilityState={{ checked: !muted }} onPress={() => setMuted(!muted)} style={{ minHeight: 44, justifyContent: 'center' }}><Text style={{ color: colors.accent, fontFamily: fonts.bold, fontSize: 11 }}>{muted ? 'SOUND OFF' : 'SOUND ON'}</Text></Pressable></Row>
-    <Card tint={colors.accent} style={{ padding: 26, gap: 20 }}>
-      <Row><View style={{ flex: 1 }}><Label color="#D4DDFF">YOUR PEOPLE. ONE PHONE.</Label></View><Text style={{ fontSize: 28, color: colors.lime }}>✳</Text></Row>
-      <Text accessibilityRole="header" style={{ fontFamily: fonts.bold, fontSize: width < 360 ? 32 : 38, lineHeight: width < 360 ? 35 : 40, letterSpacing: -1.8, color: '#FFFFFF' }}>{'Good friends.\nBad guesses.\nGreat night.'}</Text>
-      <Text style={{ fontFamily: fonts.body, color: '#E3E9FF', fontSize: 14, lineHeight: 22 }}>Five quick games. A little friendly competition. Hosted by Hannah.</Text>
-      <Pressable accessibilityRole="button" onPress={() => active ? router.push('/night') : go()} style={{ minHeight: 56, borderRadius: 12, padding: 16, backgroundColor: colors.lime, justifyContent: 'center' }}><Text style={{ fontFamily: fonts.bold, fontSize: 16, color: colors.night }}>{active ? 'Continue your night  ↗' : ready ? 'Start the night  ↗' : 'Get everyone in  ↗'}</Text></Pressable>
-      <Text style={{ fontFamily: fonts.body, color: '#E3E9FF', fontSize: 11 }}>3–10 PLAYERS   ·   ONE PHONE   ·   FIVE GAMES</Text>
-    </Card>
-    {replacement ? <Card tint={colors.goldSoft}><H2>Start something new?</H2><Body>Your current night’s scores will be replaced.</Body><Button title="Start a fresh game" onPress={() => begin(replacement.single)} /><Button title="Keep this night" kind="ghost" onPress={() => setReplacement(null)} /></Card> : null}
-    <Pressable accessibilityRole="button" onPress={() => router.push('/players')}><Row><View style={{ flex: 1, gap: 4 }}><Label>THE GUEST LIST</Label><Text style={{ fontFamily: fonts.bold, fontSize: 18, color: colors.ink }}>{players.length ? players.map(p => p.name).join(', ') : 'Who’s coming to the table?'}</Text></View><Text style={{ color: colors.accent, fontFamily: fonts.bold }}>Edit ↗</Text></Row></Pressable>
-    <View style={{ gap: 12 }}><Label>PICK YOUR CROWD</Label><Row wrap>{DECKS.map(d => <Chip key={d.id} label={d.vip && !vip ? `${d.name} · VIP` : d.name} selected={deck === d.id && (!d.vip || vip)} onPress={() => d.vip && !vip ? router.push('/premium') : st.setDeck(d.id)} />)}</Row><Body muted style={{ fontSize: 13 }}>{DECKS.find(d => d.id === deck)?.blurb}</Body></View>
-    <View style={{ borderTopWidth: 1, borderColor: colors.line, paddingTop: 24, gap: 6 }}><Label>JUST ONE MORE ROUND?</Label><H2>Pick your game.</H2><Body muted>A full night mixes all five. Or jump straight into a favorite.</Body></View>
-    {NIGHT_ORDER.map((g, i) => <Pressable key={g} accessibilityRole="button" onPress={() => go(g)}><Card style={{ padding: 20 }}><Row><View style={{ width: 44, height: 52, borderRadius: 8, backgroundColor: i % 2 ? colors.goldSoft : colors.accentSoft, alignItems: 'center', justifyContent: 'center', transform: [{ rotate: i % 2 ? '5deg' : '-5deg' }] }}><Text style={{ fontFamily: fonts.bold, fontSize: 24, color: colors.accent }}>{String(i + 1).padStart(2, '0')}</Text></View><View style={{ flex: 1, gap: 4, paddingLeft: 8 }}><Label>{GAME_TAGS[i]}</Label><Text style={{ fontFamily: fonts.bold, fontSize: 21, color: colors.ink, letterSpacing: -0.5 }}>{RULES[g].name}</Text><Body muted style={{ fontSize: 12, lineHeight: 18 }}>{RULES[g].tagline}</Body></View><Text style={{ fontSize: 22, color: colors.accent }}>↗</Text></Row></Card></Pressable>)}
-    {!vip ? <Button title="More mischief · Explore VIP" kind="secondary" onPress={() => router.push('/premium')} /> : null}
-    <Body muted style={{ fontSize: 11, textAlign: 'center' }}>PREVIEW EDITION · HOST AUDIO CURRENTLY SHOWN AS SCRIPTS</Body>
-  </Screen>;
+ const st=useParty(); const muted=useVoice(s=>s.muted);
+ const [count,setCount]=useState(Math.max(3,st.players.length));
+ const [replace,setReplace]=useState<{game?:GameId}|null>(null);
+ const active=st.night && st.night.phase!=='crowned';
+ const begin=(game?:GameId)=>{st.quickStart(count,game);setReplace(null);router.push('/night');};
+ const go=(game?:GameId)=>active?setReplace({game}):begin(game);
+ return <Screen>
+  <Row><View style={{flex:1}}><Label color={colors.ink}>A LITTLE CHAOS. GREAT COMPANY.</Label></View><Pressable accessibilityRole="switch" accessibilityLabel="Host sound" accessibilityState={{checked:!muted}} onPress={()=>setMuted(!muted)} style={{minHeight:44,justifyContent:'center'}}><Text style={{fontFamily:fonts.bold,color:colors.accent,fontSize:11}}>{muted?'SOUND OFF':'SOUND ON'}</Text></Pressable></Row>
+  <View style={{gap:14}}>
+   <Text accessibilityRole="header" style={{fontFamily:fonts.bold,fontSize:58,lineHeight:56,letterSpacing:-3,color:colors.ink}}>THE MESS<Text style={{color:colors.accent}}>{'\nAROUND.'}</Text></Text>
+   <Row><View style={{backgroundColor:colors.lime,borderRadius:20,paddingHorizontal:12,paddingVertical:8,transform:[{rotate:'-2deg'}]}}><Text style={{fontFamily:fonts.bold,fontSize:11,color:colors.ink}}>WITH HANNAH + LAMORNE</Text></View></Row>
+   <Body muted>One phone. Your favorite people. Absolutely no dignity required.</Body>
+  </View>
+  {active?<Button title="Continue playing →" onPress={()=>router.push('/night')}/>:null}
+  <View style={{backgroundColor:colors.ink,borderRadius:24,padding:20,gap:16}}>
+   <Row><View style={{flex:1,gap:4}}><Label color="#FFD85B">QUICK PLAY</Label><Text style={{fontFamily:fonts.bold,fontSize:20,color:'white'}}>How many of you?</Text></View><Pressable accessibilityRole="button" accessibilityLabel="Fewer players" disabled={count<=3} onPress={()=>setCount(count-1)} style={{padding:12}}><Text style={{color:count<=3?'#81766D':'white',fontSize:26}}>−</Text></Pressable><Text accessibilityLiveRegion="polite" style={{color:'white',fontFamily:fonts.bold,fontSize:28}}>{count}</Text><Pressable accessibilityRole="button" accessibilityLabel="More players" disabled={count>=10} onPress={()=>setCount(count+1)} style={{padding:12}}><Text style={{color:count>=10?'#81766D':'white',fontSize:26}}>+</Text></Pressable></Row>
+   <Pressable accessibilityRole="button" onPress={()=>go('point-blank')} style={({pressed})=>({backgroundColor:colors.lime,borderRadius:16,padding:18,opacity:pressed?.8:1})}><Text style={{fontFamily:fonts.bold,fontSize:18,color:colors.ink,textAlign:'center'}}>Let’s mess around  →</Text></Pressable>
+   <Text style={{color:'#D8CEC4',fontFamily:fonts.body,fontSize:12,textAlign:'center'}}>Starts with Point Blank · No names needed</Text>
+  </View>
+  {replace?<Card tint={colors.goldSoft}><Body>Start fresh? This replaces your current scores.</Body><Button title="Start fresh" onPress={()=>begin(replace.game)}/><Button title="Keep playing" kind="ghost" onPress={()=>setReplace(null)}/></Card>:null}
+  <Row><View style={{flex:1}}><Label>FIVE WAYS TO MAKE A SCENE</Label></View><Pressable accessibilityRole="button" onPress={()=>router.push('/players')} style={{paddingVertical:12}}><Text style={{fontFamily:fonts.bold,color:colors.accent,fontSize:12}}>Add names ↗</Text></Pressable></Row>
+  <View style={{flexDirection:'row',flexWrap:'wrap',gap:12}}>{NIGHT_ORDER.map((g,i)=><Pressable key={g} accessibilityRole="button" accessibilityLabel={`Play ${GAME_LOOK[g].short.replace('\n',' ')}`} onPress={()=>go(g)} style={({pressed})=>({width:i===4?'100%':'48%',flexGrow:1,backgroundColor:GAME_LOOK[g].color,borderRadius:22,padding:18,minHeight:i===4?140:230,opacity:pressed?.8:1,overflow:'hidden'})}>
+    <View style={{flexDirection:i===4?'row':'column',alignItems:i===4?'center':'flex-start',gap:8}}><View style={{flex:1,gap:8}}><Text style={{fontFamily:fonts.bold,fontSize:10,color:colors.ink}}>0{i+1} / {i===0?'START HERE':'PLAY'}</Text><Text style={{fontFamily:fonts.bold,fontSize:27,lineHeight:29,letterSpacing:-1,color:colors.ink}}>{GAME_LOOK[g].short}</Text></View><View style={{alignSelf:'flex-end'}}><GameArt game={g} size={94}/></View></View>
+   </Pressable>)}</View>
+  <Button title="Play all five · The full mess →" kind="secondary" onPress={()=>go()}/>
+  <Row><View style={{flex:1,gap:4}}><Label>YOUR CROWD</Label><Body muted style={{fontSize:12}}>Family is free. Friends gets cheekier.</Body></View></Row>
+  <Row><Chip label="Family" selected={st.deck==='family'} onPress={()=>st.setDeck('family')}/><Chip label={st.isVip()?'Friends':'Friends · VIP'} selected={st.deck==='friends'} onPress={()=>st.isVip()?st.setDeck('friends'):router.push('/premium')}/></Row>
+  <Body muted style={{fontSize:11,textAlign:'center'}}>HOST RECORDINGS COMING SOON · SCRIPT PREVIEW</Body>
+ </Screen>;
 }

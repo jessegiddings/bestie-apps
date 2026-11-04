@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import type { AnyCard } from '@/content/decks';
 import { useParty } from '@/state/store';
 import type { Night, Player, Scores } from '@/game/night';
@@ -39,3 +39,6 @@ export function useDealtCard<T extends AnyCard>(): T | null {
   }, []);
   return card;
 }
+
+export const PauseContext = createContext({ paused: false, setPaused: (_value: boolean) => {} });
+export const useGamePause = () => useContext(PauseContext);

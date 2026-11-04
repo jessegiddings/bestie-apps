@@ -36,7 +36,7 @@ export interface Night {
   winnerId: string | null;
 }
 
-/** Turns per round: enough for everyone to feel in it, short enough for an 8 minute round. */
+/** Turns per round: every hot-seat player and storyteller gets a turn. */
 export function turnsFor(game: GameId, playerCount: number): number {
   switch (game) {
     case 'point-blank':
@@ -46,7 +46,7 @@ export function turnsFor(game: GameId, playerCount: number): number {
     case 'last-word':
       return 3;
     default:
-      return Math.min(playerCount, 4);
+      return playerCount;
   }
 }
 
@@ -93,10 +93,11 @@ export function beginRound(n: Night): Night {
 
 /** Awards are base points per player id; the round multiplier is applied here. */
 export function finishTurn(n: Night, awards: Scores): Night {
+  if (n.phase !== 'turn') return n;
   const mult = multiplier(n);
   const scores = { ...n.scores };
   for (const [id, pts] of Object.entries(awards)) {
-    if (id in scores) scores[id] += pts * mult;
+    if (id in scores && Number.isFinite(pts) && pts >= 0) scores[id] += pts * mult;
   }
   const turnIndex = n.turnIndex + 1;
   if (turnIndex >= turnsFor(currentGame(n), n.players.length)) return { ...n, scores, turnIndex, phase: 'scoreboard' };

@@ -1,11 +1,13 @@
 import { cancel, play } from '@bestie/core';
 import { Redirect, router } from 'expo-router';
-import { useMemo } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { useMemo, useRef, useState } from 'react';
+import { Modal, Pressable, Text, View } from 'react-native';
 import Svg, { Circle, Path } from 'react-native-svg';
 import { RULES } from '@/content/decks';
 import { choose, CLOSERS, CROWNS, FINAL_ROUND, GAME_INTROS, OPENERS, SCORE_LINES, TIEBREAK } from '@/content/host';
 import { currentGame, leaderIds, multiplier, scoreMood, standings, turnPlayer, turnsFor, type Night } from '@/game/night';
+import { PauseContext, useGamePause } from '@/games/shared';
+import { GameArt, GAME_LOOK } from '@/ui/GameArt';
 import { TURN_SCREENS } from '@/games';
 import { useParty } from '@/state/store';
 import { Body, Button, Card, H1, H2, HostLine, Label, PlayerPicker, Row, Screen, styles as kit, useHost } from '@/ui/kit';
@@ -13,12 +15,22 @@ import { colors, fonts, space } from '@/ui/theme';
 
 export default function NightScreen() {
   const night = useParty((s) => s.night);
+  const [paused, setPaused] = useState(false);
   if (!night) return <Redirect href="/" />;
-  return <Runner night={night} />;
+  return <PauseContext.Provider value={{ paused, setPaused }}><Runner night={night} />
+    <Modal visible={paused} transparent animationType="fade" onRequestClose={() => setPaused(false)}>
+      <View style={{flex:1,backgroundColor:'#23201FDD',justifyContent:'center',padding:24}}><Card>
+        <H1>Snack break?</H1><Body>Your turn is right where you left it.</Body>
+        <Button title="Back to the mess" onPress={() => setPaused(false)} />
+        <Button title="End game & go home" kind="ghost" onPress={() => { cancel(); useParty.getState().endNight(); setPaused(false); router.replace('/'); }} />
+      </Card></View>
+    </Modal></PauseContext.Provider>;
 }
 
 function Runner({ night }: { night: Night }) {
   const { openNight, beginRound, finishTurn, afterScoreboard, breakTie, endNight, start } = useParty.getState();
+  const { setPaused } = useGamePause();
+  const submitted = useRef<string | null>(null);
   const game = currentGame(night);
   const rules = RULES[game];
   const mult = multiplier(night);
@@ -47,7 +59,7 @@ function Runner({ night }: { night: Night }) {
 
   const leave = () => {
     cancel();
-    router.replace('/');
+    setPaused(true);
   };
 
   const header = (
@@ -80,7 +92,9 @@ function Runner({ night }: { night: Night }) {
       <Screen>
         {header}
         {mult > 1 ? <Label color={colors.gold}>FINAL ROUND · DOUBLE POINTS</Label> : null}
-        <H1>{rules.name}</H1>
+        <View style={{backgroundColor:GAME_LOOK[game].color,borderRadius:24,padding:24,gap:12}}>
+          <GameArt game={game} size={120}/><H1>{rules.name}</H1>
+        </View>
         <Body muted>{rules.tagline}</Body>
         {hostClip ? <HostLine clipId={hostClip.id} /> : null}
         <Card>
@@ -100,7 +114,7 @@ function Runner({ night }: { night: Night }) {
       <Screen>
         {header}
         <Body muted style={kit.small}>{`${rules.name} · turn ${night.turnIndex + 1} of ${total}${mult > 1 ? ' · double points' : ''}`}</Body>
-        <Turn key={`${night.roundIndex}-${night.turnIndex}`} night={night} player={player} onDone={finishTurn} />
+        <Turn key={`${night.roundIndex}-${night.turnIndex}`} night={night} player={player} onDone={(awards) => { const key = `${night.roundIndex}:${night.turnIndex}`; if (submitted.current === key) return; submitted.current = key; finishTurn(awards); }} />
       </Screen>
     );
   }
@@ -146,7 +160,7 @@ function Runner({ night }: { night: Night }) {
       {header}
       <View style={{ alignItems: 'center', gap: space.sm }}>
         <Crown />
-        <Label color={colors.gold}>BESTIE OF THE NIGHT</Label>
+        <Label color={colors.gold}>MASTER OF THE MESS</Label>
         <H1>{winner?.name ?? 'Everyone'}</H1>
       </View>
       {hostClip ? <HostLine clipId={hostClip.id} /> : null}

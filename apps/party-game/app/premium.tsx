@@ -38,7 +38,7 @@ export default function VIP() {
     <Label color={colors.accent}>{purchases.simulated ? 'VIP PASS PREVIEW · NO CHARGES' : 'VIP PASS'}</Label>
     <H1>{'Same friends.\nNew material.'}</H1>
     <Body muted>Bring a little more mischief to the table.</Body>
-    <Card><Body>Unlock the Friends deck across all five games.</Body><Body muted style={kit.small}>This build includes draft scripts. Hannah’s recordings will be added separately.</Body></Card>
+    <Card><Body>Unlock the Friends deck across all five games.</Body><Body muted style={kit.small}>This build includes draft scripts. Hannah & Lamorne’s recordings will be added separately.</Body></Card>
     <Row wrap>{PRODUCTS.map(p => <Chip key={p.id} label={`${p.label} · ${purchases.simulated ? `$${p.usd} example` : prices[p.id] ?? 'Unavailable'}`} selected={p.id === productId} onPress={() => !busy && setProductId(p.id)} />)}</Row>
     <Body muted style={kit.small}>{purchases.simulated ? 'Preview prices only. This button does not start a subscription.' : prices[productId] ? `${prices[productId]} billed ${product.period === 'lifetime' ? 'once, for lifetime access' : product.period === 'year' ? 'once a year' : 'every month'}. ${product.period === 'lifetime' ? 'No subscription.' : 'Renews automatically unless cancelled in your Apple account settings.'}` : 'Billing is not available in this build.'}</Body>
     {premium ? <Body>VIP is on.</Body> : <Button title={busy ? 'One moment…' : purchases.simulated ? 'Try VIP preview' : 'Start VIP'} disabled={busy || !available} onPress={() => void run(false)} />}

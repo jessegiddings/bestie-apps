@@ -1,12 +1,12 @@
 {
   "expo": {
-    "name": "Bestie Night",
+    "name": "The Mess Around",
     "slug": "party-game",
     "version": "0.1.0",
     "scheme": "bestienight",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
-    "backgroundColor": "#F4F3ED",
+    "backgroundColor": "#FFF8E9",
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": false,

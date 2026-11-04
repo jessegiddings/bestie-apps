@@ -1,19 +1,19 @@
 export const colors = {
-  "ground": "#F4F3ED",
+  "ground": "#FFF8E9",
   "surface": "#FFFFFF",
-  "line": "#D8DCD8",
-  "ink": "#192A4B",
-  "muted": "#606A7A",
-  "accent": "#2947D5",
-  "accentSoft": "#E9ECFF",
+  "line": "#E4D9C6",
+  "ink": "#23201F",
+  "muted": "#72675F",
+  "accent": "#4826B5",
+  "accentSoft": "#EAE1FF",
   "gold": "#716411",
-  "goldSoft": "#F3F6BD",
+  "goldSoft": "#FFF0B3",
   "coral": "#B94A38",
   "coralSoft": "#FAE6DE",
   "good": "#1D735A",
   "goodSoft": "#E0F1E7",
-  "night": "#17265A",
-  "lime": "#E9F58A"
+  "night": "#23201F",
+  "lime": "#FFD85B"
 } as const;
 export const fonts = { body: 'PlusJakartaSans_500Medium', bold: 'PlusJakartaSans_700Bold', display: 'Fraunces_600SemiBold' } as const;
 export const space = { xs: 4, sm: 8, md: 12, lg: 16, xl: 24, xxl: 32 } as const;

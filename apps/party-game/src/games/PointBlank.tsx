@@ -7,12 +7,13 @@ import { COUNTDOWN } from '@/content/host';
 import { pick, scorePointBlank } from '@/game/night';
 import { BigCard, Body, Button, Card, H2, Label, PlayerPicker } from '@/ui/kit';
 import { colors, fonts } from '@/ui/theme';
-import { useDealtCard, type TurnProps } from './shared';
+import { useGamePause, useDealtCard, type TurnProps } from './shared';
 
 type Step = 'read' | 'count' | 'who' | 'story' | 'forfeit';
 const BEATS = ['3', '2', '1', 'POINT!'];
 
 export function PointBlank({ night, onDone }: TurnProps) {
+  const { paused } = useGamePause();
   const card = useDealtCard<PromptCard>();
   const [step, setStep] = useState<Step>('read');
   const [beat, setBeat] = useState(0);
@@ -21,7 +22,7 @@ export function PointBlank({ night, onDone }: TurnProps) {
   const name = night.players.find((p) => p.id === pointed)?.name ?? '';
 
   useEffect(() => {
-    if (step !== 'count') return;
+    if (paused || step !== 'count') return;
     if (beat >= BEATS.length - 1) {
       void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => undefined);
       const t = setTimeout(() => setStep('who'), 1200);
@@ -29,7 +30,7 @@ export function PointBlank({ night, onDone }: TurnProps) {
     }
     const t = setTimeout(() => setBeat((b) => b + 1), 900);
     return () => clearTimeout(t);
-  }, [step, beat]);
+  }, [step, beat, paused]);
 
   if (!card) return <Body muted>Getting your next card ready…</Body>;
 

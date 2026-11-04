@@ -5,7 +5,7 @@ import { BigCard, Body, Button, Card, H1, H2, Label, PlayerPicker } from '@/ui/k
 import { colors } from '@/ui/theme';
 import { useDealtCard, PassTo, type TurnProps } from './shared';
 
-type Step = 'reveal' | 'clues' | 'vote' | 'result';
+type Step = 'reveal' | 'clues' | 'vote' | 'guess' | 'result';
 
 export function OddOneOut({ night, player, onDone }: TurnProps) {
   const card = useDealtCard<WordCard>();
@@ -13,6 +13,7 @@ export function OddOneOut({ night, player, onDone }: TurnProps) {
   const [seat, setSeat] = useState(0);
   const [peeking, setPeeking] = useState(false);
   const [step, setStep] = useState<Step>('reveal');
+  const [guessed, setGuessed] = useState(false);
   const [votedId, setVotedId] = useState<string | null>(null);
 
   // Hand the phone round the table starting with this turn's player.
@@ -62,11 +63,17 @@ export function OddOneOut({ night, player, onDone }: TurnProps) {
     return (
       <>
         <H2>Talk it over, then vote. Who’s the Odd One?</H2>
-        <PlayerPicker players={night.players} onPick={(id) => { setVotedId(id); setStep('result'); }} />
+        <PlayerPicker players={night.players} onPick={(id) => { setVotedId(id); setStep(id === oddId ? 'result' : 'guess'); }} />
       </>
     );
   }
 
+  if (step === 'guess') return <>
+    <Label>THE BLUFFER ESCAPED</Label><H2>{`${odd.name}, one chance to name the secret word.`}</H2>
+    <Body>Say your guess out loud before anyone reveals it. Everyone who saw the word: was that right?</Body>
+    <Button title="Correct guess · +3" kind="good" onPress={() => { setGuessed(true); setStep('result'); }} />
+    <Button title="Wrong guess · +2" kind="secondary" onPress={() => { setGuessed(false); setStep('result'); }} />
+  </>;
   const caught = votedId === oddId;
   return (
     <>
@@ -78,9 +85,8 @@ export function OddOneOut({ night, player, onDone }: TurnProps) {
         <Button title="Everyone else +1" kind="good" onPress={() => onDone(scoreOddOneOut(night.players, oddId, true, false))} />
       ) : (
         <>
-          <Body>{`${odd.name} gets 2 points, and 1 more if they guessed the word before the reveal.`}</Body>
-          <Button title="They guessed it (+3)" kind="good" onPress={() => onDone(scoreOddOneOut(night.players, oddId, false, true))} />
-          <Button title="No idea (+2)" kind="secondary" onPress={() => onDone(scoreOddOneOut(night.players, oddId, false, false))} />
+          <Body>{`${odd.name} earns ${guessed ? 3 : 2} points.`}</Body>
+          <Button title="Next turn" onPress={() => onDone(scoreOddOneOut(night.players, oddId, false, guessed))} />
         </>
       )}
     </>

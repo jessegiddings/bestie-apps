@@ -34,6 +34,7 @@ export interface PartyState {
   renamePlayer: (id: string, name: string) => void;
   setDeck: (deck: DeckId) => void;
   start: (single?: GameId) => void;
+  quickStart: (count: number, single?: GameId) => void;
   openNight: () => void;
   beginRound: () => void;
   deal: () => AnyCard;
@@ -68,6 +69,13 @@ export const useParty = create<PartyState>()(
         if (name) set((s) => ({ players: s.players.map((p) => (p.id === id ? { ...p, name } : p)) }));
       },
       setDeck: (deck) => set({ deck }),
+      quickStart: (count, single) => set((s) => {
+        const total = Math.max(3, Math.min(MAX_PLAYERS, Math.floor(count)));
+        const players = Array.from({ length: total }, (_, i) => s.players[i] ?? { id: newPlayerId(), name: `Player ${i + 1}` });
+        const deck = s.isVip() ? s.deck : 'family';
+        const night = startNight(players, deck, single);
+        return { players, deck, night: { ...night, phase: 'round-intro' } };
+      }),
       start: (single) => set((s) => ({ night: startNight(s.players, s.deck, single) })),
       openNight: () => set((s) => (s.night ? { night: openNight(s.night) } : s)),
       beginRound: () => set((s) => (s.night ? { night: beginRound(s.night) } : s)),

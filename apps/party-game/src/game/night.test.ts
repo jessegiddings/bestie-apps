@@ -101,8 +101,8 @@ describe('a single game', () => {
 });
 
 describe('turns per round', () => {
-  it('keeps rounds short with big groups', () => {
-    expect(turnsFor('bestie-test', 10)).toBe(4);
+  it('gives every storyteller and hot-seat player a turn', () => {
+    expect(turnsFor('bestie-test', 10)).toBe(10);
     expect(turnsFor('bestie-test', 3)).toBe(3);
     expect(turnsFor('odd-one-out', 10)).toBe(2);
   });
@@ -188,4 +188,23 @@ describe('host lines', () => {
     const banned = /new girl|true american|\bloft\b|\bjess\b|schmidt|\bnick\b|winston|\bcece\b|douchebag jar/i;
     for (const l of lines) expect(l.text).not.toMatch(banned);
   });
+});
+
+
+describe('turn safety', () => {
+ it('does not score a completed round twice', () => {
+   const done = playRound(startNight(players, 'family', 'point-blank'), {p0:1});
+   expect(finishTurn(done, {p0:1})).toEqual(done);
+ });
+ it('rejects invalid points without corrupting the scoreboard', () => {
+   const n = beginRound(startNight(players, 'family', 'point-blank'));
+   expect(finishTurn(n, {p0:NaN,p1:Infinity,p2:-1}).scores).toEqual(n.scores);
+ });
+ it('gives all ten players a storytelling turn', () => {
+   const group = Array.from({length:10},(_,i)=>({id:`p${i}`,name:`Player ${i}`}));
+   let n = beginRound(startNight(group, 'family', 'real-or-made-up'));
+   const seen = new Set<string>();
+   while(n.phase === 'turn'){seen.add(turnPlayer(n).id);n=finishTurn(n,{});}
+   expect(seen.size).toBe(10);
+ });
 });

@@ -2,7 +2,7 @@ import { play, replay, useVoice } from '@bestie/core';
 import { useEffect, type ReactNode } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View, type StyleProp, type TextStyle, type ViewStyle } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { HOST_NAME } from '@/content/brand';
+import { speakerFor } from '@/content/host';
 import { colors, fonts, radius, space, TOUCH_MIN } from './theme';
 
 export function Screen({ children, scroll = true }: { children: ReactNode; scroll?: boolean }) {
@@ -86,14 +86,14 @@ export function HostLine({ clipId }: { clipId: string }) {
     <Card tint={colors.accentSoft}>
       <Row>
         <View style={{ flex: 1 }}>
-          <Label color={colors.accent}>{HOST_NAME.toUpperCase()}</Label>
+          <Label color={colors.accent}>{speakerFor(clipId).toUpperCase()}</Label>
         </View>
         <Pressable accessibilityRole="button" accessibilityLabel="Play that line again" hitSlop={12} onPress={() => (status === 'playing' ? undefined : replay())}>
           <Text style={styles.replay}>{status === 'playing' ? 'Playing…' : 'Replay'}</Text>
         </Pressable>
       </Row>
       <Body style={{ marginTop: space.xs }}>{caption.text}</Body>
-      {captionOnly ? <Body muted style={styles.small}>Host script preview · Hannah’s recordings aren’t in this build yet.</Body> : null}
+      {captionOnly ? <Body muted style={styles.small}>Host script preview · Hannah & Lamorne’s recordings aren’t in this build yet.</Body> : null}
       {status === 'failed' ? <Body muted style={styles.small}>That didn’t play. Tap Replay to try again.</Body> : null}
     </Card>
   );
@@ -132,7 +132,7 @@ export function PlayerPicker({ players, onPick, exclude = [], selected }: { play
 export const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.ground },
   scroll: { flexGrow: 1 },
-  screenInner: { paddingHorizontal: 24, paddingVertical: 24, gap: 24, maxWidth: 560, width: '100%', alignSelf: 'center' },
+  screenInner: { paddingHorizontal: 24, paddingVertical: 20, gap: 20, maxWidth: 560, width: '100%', alignSelf: 'center' },
   h1: { fontFamily: fonts.bold, fontSize: 38, lineHeight: 42, letterSpacing: -1.8, color: colors.ink },
   h2: { fontFamily: fonts.bold, fontSize: 20, lineHeight: 26, color: colors.ink },
   body: { fontFamily: fonts.body, fontSize: 15, lineHeight: 23, color: colors.ink },
@@ -149,6 +149,6 @@ export const styles = StyleSheet.create({
   statValue: { fontFamily: fonts.bold, fontSize: 26, color: colors.ink, fontVariant: ['tabular-nums'] },
   statLabel: { fontFamily: fonts.body, fontSize: 14, color: colors.muted },
   replay: { fontFamily: fonts.bold, fontSize: 15, color: colors.accent },
-  bigCard: { borderRadius: radius.lg, padding: space.xl, minHeight: 220, justifyContent: 'center', gap: space.md, borderWidth: 1, borderColor: colors.line },
-  bigText: { fontFamily: fonts.bold, fontSize: 34, lineHeight: 40, letterSpacing: -1, color: colors.ink },
+  bigCard: { borderRadius: radius.lg, padding: space.xl, minHeight: 250, justifyContent: 'center', gap: space.md, borderWidth: 1, borderColor: colors.line },
+  bigText: { fontFamily: fonts.bold, fontSize: 36, lineHeight: 43, letterSpacing: -1, color: colors.ink },
 });

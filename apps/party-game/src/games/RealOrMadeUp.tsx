@@ -4,12 +4,13 @@ import type { PromptCard } from '@/content/decks';
 import { scoreRealOrMadeUp, secretFor } from '@/game/night';
 import { BigCard, Body, Button, Card, H2, Label } from '@/ui/kit';
 import { colors, fonts, space } from '@/ui/theme';
-import { useDealtCard, PassTo, type TurnProps } from './shared';
+import { useGamePause, useDealtCard, PassTo, type TurnProps } from './shared';
 
 type Step = 'pass' | 'secret' | 'story' | 'vote' | 'result';
 const STORY_SECONDS = 45;
 
 export function RealOrMadeUp({ night, player, onDone }: TurnProps) {
+  const { paused } = useGamePause();
   const card = useDealtCard<PromptCard>();
   const [secret] = useState(secretFor);
   const [step, setStep] = useState<Step>('pass');
@@ -17,10 +18,10 @@ export function RealOrMadeUp({ night, player, onDone }: TurnProps) {
   const [vote, setVote] = useState<'truth' | 'made-up' | null>(null);
 
   useEffect(() => {
-    if (step !== 'story' || left <= 0) return;
+    if (paused || step !== 'story' || left <= 0) return;
     const t = setTimeout(() => setLeft((s) => s - 1), 1000);
     return () => clearTimeout(t);
-  }, [step, left]);
+  }, [step, left, paused]);
 
   if (!card) return <Body muted>Getting your next card ready…</Body>;
 

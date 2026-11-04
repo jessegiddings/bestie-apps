@@ -3,7 +3,7 @@ import type { GameId, Rng } from '@/game/night';
 import { pick } from '@/game/night';
 
 /**
- * Everything she says as host. Drafts for her to rewrite in her own words; the recording sheet is
+ * Draft recording lines for Hannah and Lamorne to rewrite in their own words; the recording sheet is
  * docs/party-game-host-script.md. To add a recording, drop `<id>.m4a` in assets/voice/ and set
  * `asset: require('../../assets/voice/<id>.m4a')` on the entry. Player names are never spoken,
  * so lines say "you" while the screen shows the name.
@@ -11,9 +11,9 @@ import { pick } from '@/game/night';
 const line = (id: string, text: string, priority: Clip['priority'] = 2): Clip => ({ id, text, asset: null, priority });
 
 export const OPENERS = [
-  line('open-1', 'Okay, phones down. Except this one. I’m your host tonight: five games, one crown, and I am not above playing favourites.'),
+  line('open-1', 'Okay, phones down. Except this one. Hannah here. Lamorne and I are your hosts: five games, one crown, and I am not above playing favourites.'),
   line('open-2', 'Welcome, welcome! Find a comfy seat and somebody you trust a little less than everyone else. Let’s play.'),
-  line('open-3', 'Hi, hello, it’s game night and I’m in charge. Five rounds, the last one counts double, and the winner gets crowned by me personally.'),
+  line('open-3', 'Hi, hello, it’s game night and Lamorne here. Hannah says she’s in charge. We’ll see. Five rounds, the last one counts double, and the winner gets crowned by us personally.'),
 ];
 
 export const GAME_INTROS: Record<GameId, Clip[]> = {
@@ -76,7 +76,7 @@ export const TIEBREAK = [
 ];
 
 export const CROWNS = [
-  line('crown-1', 'Tonight’s Bestie of the Night is… you! Stand up, take a bow. You’re insufferable now, and that’s fine.', 3),
+  line('crown-1', 'Tonight’s Master of the Mess is… you! Stand up, take a bow. You’re insufferable now, and that’s fine.', 3),
   line('crown-2', 'We have a winner! Put the crown on, do a little wave. You earned it.', 3),
   line('crown-3', 'And the crown goes to… you! I always knew. I didn’t, but I’m saying I did.', 3),
 ];
@@ -106,4 +106,9 @@ export function choose(list: readonly Clip[], rng?: Rng): Clip {
 
 export function allHostLines(): Clip[] {
   return [...OPENERS, ...Object.values(GAME_INTROS).flat(), COUNTDOWN, ...TIME_UP, ...Object.values(SCORE_LINES).flat(), ...FINAL_ROUND, ...TIEBREAK, ...CROWNS, ...CLOSERS];
+}
+
+/** Recording assignments; captions never imply an unrecorded voice is playing. */
+export function speakerFor(id: string): 'Hannah' | 'Lamorne' {
+  return id === 'countdown' || id.endsWith('-2') ? 'Lamorne' : 'Hannah';
 }

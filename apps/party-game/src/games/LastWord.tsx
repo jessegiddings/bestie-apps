@@ -6,25 +6,27 @@ import { TIME_UP } from '@/content/host';
 import { fuseSeconds, pick, scoreLastWord } from '@/game/night';
 import { BigCard, Body, Button, H2, Label, PlayerPicker } from '@/ui/kit';
 import { colors } from '@/ui/theme';
-import { useDealtCard, type TurnProps } from './shared';
+import { useGamePause, useDealtCard, type TurnProps } from './shared';
 
 type Step = 'ready' | 'live' | 'boom';
 
 export function LastWord({ night, player, onDone }: TurnProps) {
+  const { paused } = useGamePause();
   const card = useDealtCard<PromptCard>();
   const [step, setStep] = useState<Step>('ready');
   const [passes, setPasses] = useState(0);
-  const fuse = useRef(fuseSeconds());
+  const fuse = useRef(fuseSeconds() * 1000);
 
   useEffect(() => {
-    if (step !== 'live') return;
+    if (paused || step !== 'live') return;
+    const started = Date.now();
     const t = setTimeout(() => {
       play(pick(TIME_UP).id, { interrupt: true });
       void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error).catch(() => undefined);
       setStep('boom');
-    }, fuse.current * 1000);
-    return () => clearTimeout(t);
-  }, [step]);
+    }, fuse.current);
+    return () => { clearTimeout(t); fuse.current = Math.max(0, fuse.current - (Date.now() - started)); };
+  }, [step, paused]);
 
   if (!card) return <Body muted>Getting your next card ready…</Body>;
 
