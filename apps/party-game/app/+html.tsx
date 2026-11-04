@@ -1,8 +1,10 @@
-import { ScrollViewStyleReset } from 'expo-router/html';
+import { ScrollViewStyleReset, useServerDocumentContext } from 'expo-router/html';
 import type { PropsWithChildren } from 'react';
 
 export default function Html({ children }: PropsWithChildren) {
-  return <html lang="en"><head>
+  const { htmlAttributes, bodyAttributes, headNodes, bodyNodes } = useServerDocumentContext();
+  return <html {...htmlAttributes} lang="en"><head>
+    {headNodes}
     <meta charSet="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>The Mess Around · Play</title>
@@ -10,5 +12,5 @@ export default function Html({ children }: PropsWithChildren) {
     <meta name="robots" content="noindex, nofollow" />
     <meta name="theme-color" content="#EDE6D7" />
     <ScrollViewStyleReset />
-  </head><body>{children}</body></html>;
+  </head><body {...bodyAttributes}>{children}{bodyNodes}</body></html>;
 }
