@@ -1,0 +1,267 @@
+{
+  "updated": "2026-11-06",
+  "source": "User-selected synthetic voices",
+  "clips": [
+    {
+      "clipId": "intro-close-call-1",
+      "speaker": "Lamorne",
+      "voiceId": "RifzANTuAxrpUB8rCJZj",
+      "model": "eleven_v4",
+      "generationId": "9czdzfMMvQjUEWQJbzno",
+      "durationSeconds": 10,
+      "sha256": "1b604b01564120152d1404a51c9fb4ebbce662976aca418603b2b3ad1cfb96a9"
+    },
+    {
+      "clipId": "intro-who-wrote-that-1",
+      "speaker": "Lamorne",
+      "voiceId": "RifzANTuAxrpUB8rCJZj",
+      "model": "eleven_v4",
+      "generationId": "jcbNBvK4gTfU3br0tBDu",
+      "durationSeconds": 9.6,
+      "sha256": "38b6ac051e3e5142036182d7af3bec0dabe9a40f649109e4d92823fb67acb374"
+    },
+    {
+      "clipId": "intro-take-two-1",
+      "speaker": "Hannah",
+      "voiceId": "xC2yu4CWW6vU370IS8Wc",
+      "model": "eleven_v4",
+      "generationId": "fSbIU3q3rWYxsK3CnkFt",
+      "durationSeconds": 10.48,
+      "sha256": "a3916093c67040776cff78f2ade9084babe6bc22e774a051cd31f3d075a6306b"
+    },
+    {
+      "clipId": "open-1",
+      "speaker": "Hannah",
+      "voiceId": "xC2yu4CWW6vU370IS8Wc",
+      "model": "eleven_v4",
+      "generationId": "5RNv6gdoriTIGefmuzEw",
+      "durationSeconds": 9.2,
+      "sha256": "c3c8a8ca7463238cd3bae4f3fb2fed880d3d5b008b6fde7f529cc15d195748d6"
+    },
+    {
+      "clipId": "intro-point-blank-1",
+      "speaker": "Hannah",
+      "voiceId": "xC2yu4CWW6vU370IS8Wc",
+      "model": "eleven_v4",
+      "generationId": "U9cY8nnQ8AGoQ8HBo8Jf",
+      "durationSeconds": 12.88,
+      "sha256": "352d5a91b8ddb3fcb16caf137c0e7734907722ce73f62f61bfbdf34d51ae71bf"
+    },
+    {
+      "clipId": "intro-odd-one-out-1",
+      "speaker": "Hannah",
+      "voiceId": "xC2yu4CWW6vU370IS8Wc",
+      "model": "eleven_v4",
+      "generationId": "WZIcLfwXQcoIiYHQQ6bp",
+      "durationSeconds": 7.2,
+      "sha256": "7f68c4d15a6282e9758eda3688021df41735fa24492c67e4e43ff8f9c9f052a7"
+    },
+    {
+      "clipId": "intro-bestie-test-1",
+      "speaker": "Hannah",
+      "voiceId": "xC2yu4CWW6vU370IS8Wc",
+      "model": "eleven_v4",
+      "generationId": "Mp2VwEoqPBQTDonv8ktq",
+      "durationSeconds": 11.92,
+      "sha256": "a48cfd5f9755944a0f3520e2333de1550b762706bdedb6a23056aee55163e003"
+    },
+    {
+      "clipId": "intro-real-or-made-up-1",
+      "speaker": "Lamorne",
+      "voiceId": "RifzANTuAxrpUB8rCJZj",
+      "model": "eleven_v4",
+      "generationId": "rsF2vnmtoieljAC3ENAT",
+      "durationSeconds": 5.84,
+      "sha256": "e4ba08832a0c2dc782deb4e958a58b32898d9a3954f9ad8f2968114d55ea2eac"
+    },
+    {
+      "clipId": "intro-last-word-1",
+      "speaker": "Lamorne",
+      "voiceId": "RifzANTuAxrpUB8rCJZj",
+      "model": "eleven_v4",
+      "generationId": "JRj4YawIBIYOSap0Pgwi",
+      "durationSeconds": 6.96,
+      "sha256": "a9b53510f1b645cbc2aad1395cc917a8f4f5ce959fb41b1984a5dd8025de1074"
+    },
+    {
+      "clipId": "countdown",
+      "speaker": "Lamorne",
+      "voiceId": "RifzANTuAxrpUB8rCJZj",
+      "model": "eleven_v4",
+      "generationId": "QCtAGXNWgvtsdf4F52Rf",
+      "durationSeconds": 3.52,
+      "sha256": "268ba354171619a919fa12e85bd0ed71276929df2ce3fc4f36caa0d1f2f45a55"
+    },
+    {
+      "clipId": "time-1",
+      "speaker": "Hannah",
+      "voiceId": "xC2yu4CWW6vU370IS8Wc",
+      "model": "eleven_v4",
+      "generationId": "B9IT4xu5VBYQ1Ll6E58w",
+      "durationSeconds": 6.24,
+      "sha256": "aa4ec83ad5654f78a56b3218ebb0f8029cad1ed1b220f7ecbfcfe5420fa340c7"
+    },
+    {
+      "clipId": "score-leader-1",
+      "speaker": "Hannah",
+      "voiceId": "xC2yu4CWW6vU370IS8Wc",
+      "model": "eleven_v4",
+      "generationId": "FXr8tThdaNr2tnm0bX4F",
+      "durationSeconds": 4.8,
+      "sha256": "13115ab22dc2cc6231c4283e03088fa21c1ee5a43e005318b8c696a524bf820c"
+    },
+    {
+      "clipId": "score-comeback-1",
+      "speaker": "Lamorne",
+      "voiceId": "RifzANTuAxrpUB8rCJZj",
+      "model": "eleven_v4",
+      "generationId": "QYuIamFKYE9Hcmr6x5dV",
+      "durationSeconds": 3.2,
+      "sha256": "377cdbeed233ea03d8deff3108b2f80b4fc60fa622cee182979e603c8fac7a4d"
+    },
+    {
+      "clipId": "score-tie-1",
+      "speaker": "Hannah",
+      "voiceId": "xC2yu4CWW6vU370IS8Wc",
+      "model": "eleven_v4",
+      "generationId": "hhQOg8vpNqmP3xORbCjk",
+      "durationSeconds": 3.68,
+      "sha256": "a13081666d5b8171cdd48866ff682e931839b277f9f168bd47d2243f31557832"
+    },
+    {
+      "clipId": "final-1",
+      "speaker": "Hannah",
+      "voiceId": "xC2yu4CWW6vU370IS8Wc",
+      "model": "eleven_v4",
+      "generationId": "ohBIfKbyNXPVvz5vEf3T",
+      "durationSeconds": 5.52,
+      "sha256": "07994b33cdd021a6425afdc0c112529f2793eadcc15e4549d6ab64289146a740"
+    },
+    {
+      "clipId": "tiebreak-1",
+      "speaker": "Hannah",
+      "voiceId": "xC2yu4CWW6vU370IS8Wc",
+      "model": "eleven_v4",
+      "generationId": "8POijJVDH9tAwbTzCxKc",
+      "durationSeconds": 4.88,
+      "sha256": "feea62e09d349612fecac84de4a09d235024e8c5cf7ad56a274f7fd2dee684ef"
+    },
+    {
+      "clipId": "crown-1",
+      "speaker": "Lamorne",
+      "voiceId": "RifzANTuAxrpUB8rCJZj",
+      "model": "eleven_v4",
+      "generationId": "C0snmU4TdNYK6WgfhQK8",
+      "durationSeconds": 7.44,
+      "sha256": "b8111aedaf4bd200746c60b1cc761605ae34e4d548a738b234ecaa66b0e754a8"
+    },
+    {
+      "clipId": "close-1",
+      "speaker": "Hannah",
+      "voiceId": "xC2yu4CWW6vU370IS8Wc",
+      "model": "eleven_v4",
+      "generationId": "2GAdvUyvzRjxFI1cNI7I",
+      "durationSeconds": 4.56,
+      "sha256": "b8f41437931c02b4837b0224c5a056a056e850cf1407da10e40e0635b70f82a9"
+    },
+    {
+      "clipId": "react-story-hannah",
+      "speaker": "Hannah",
+      "voiceId": "xC2yu4CWW6vU370IS8Wc",
+      "model": "eleven_v4",
+      "generationId": "EIvm9UHMRu5qJr6ioUzO",
+      "durationSeconds": 3.28,
+      "sha256": "1462f4bf12ea5e5695d9a0a70b4deeb7c7b3ea8e0ee5dbdd0de99210d7ca11aa"
+    },
+    {
+      "clipId": "react-match-lamorne",
+      "speaker": "Lamorne",
+      "voiceId": "RifzANTuAxrpUB8rCJZj",
+      "model": "eleven_v4",
+      "generationId": "EoHZCAifAEbciddrypoT",
+      "durationSeconds": 3.52,
+      "sha256": "1935369f46b2950bc37c72a582136ba7dea19402e447a8565f552441c1b8f0fc"
+    },
+    {
+      "clipId": "react-miss-hannah",
+      "speaker": "Hannah",
+      "voiceId": "xC2yu4CWW6vU370IS8Wc",
+      "model": "eleven_v4",
+      "generationId": "T1u8sMUKs7Oyp9tg0Alu",
+      "durationSeconds": 3.76,
+      "sha256": "3e40b619bf221f486278b86138dffc687abbb3320e57d9f8a749256a5fd4b807"
+    },
+    {
+      "clipId": "react-fooled-lamorne",
+      "speaker": "Lamorne",
+      "voiceId": "RifzANTuAxrpUB8rCJZj",
+      "model": "eleven_v4",
+      "generationId": "oNsVkzlUG5maDtBKdeG7",
+      "durationSeconds": 3.6,
+      "sha256": "88a28a19917154acd7541d7231da273537410a527a8237a212652bd05581251f"
+    },
+    {
+      "clipId": "react-caught-hannah",
+      "speaker": "Hannah",
+      "voiceId": "xC2yu4CWW6vU370IS8Wc",
+      "model": "eleven_v4",
+      "generationId": "attt7meMMK0yGl4mSZI9",
+      "durationSeconds": 3.76,
+      "sha256": "df73baa406bc8158d08488437a4cab78209ab27cc97a48c308b47b7732a010d8"
+    },
+    {
+      "clipId": "react-escape-lamorne",
+      "speaker": "Lamorne",
+      "voiceId": "RifzANTuAxrpUB8rCJZj",
+      "model": "eleven_v4",
+      "generationId": "rUl6DDjPKYzmjG3SdmcP",
+      "durationSeconds": 3.92,
+      "sha256": "82a307d837c2f096c660c0b0e7d3c53341e3e1511b4b2537f6aeb1764ef05d5a"
+    },
+    {
+      "clipId": "challenge-demo-1",
+      "speaker": "Hannah",
+      "voiceId": "xC2yu4CWW6vU370IS8Wc",
+      "model": "eleven_v4",
+      "generationId": "VQOrmjpHIuhwJi3Zs2BR",
+      "durationSeconds": 4.88,
+      "sha256": "40a5d933c3f6177c254cc7bf37fac9b151cc3a3826cce86fad0fbd8ac0282af2"
+    },
+    {
+      "clipId": "challenge-demo-2",
+      "speaker": "Lamorne",
+      "voiceId": "RifzANTuAxrpUB8rCJZj",
+      "model": "eleven_v4",
+      "generationId": "rSh9ulG98XEum82MmsqR",
+      "durationSeconds": 3.12,
+      "sha256": "86f355a8a8481eb71bc4e2b171efa44a9059623c084c535a6d5aa95ff52d83bb"
+    },
+    {
+      "clipId": "challenge-demo-3",
+      "speaker": "Hannah",
+      "voiceId": "xC2yu4CWW6vU370IS8Wc",
+      "model": "eleven_v4",
+      "generationId": "rXCxqOq79X5YauOP7frM",
+      "durationSeconds": 3.12,
+      "sha256": "1998db81d4c7263b1f3af12340a00a01a067c64ba65ed01022499e6751346a6e"
+    },
+    {
+      "clipId": "challenge-demo-4",
+      "speaker": "Lamorne",
+      "voiceId": "RifzANTuAxrpUB8rCJZj",
+      "model": "eleven_v4",
+      "generationId": "HIDBqMWJrcoO0I44v5IS",
+      "durationSeconds": 4.08,
+      "sha256": "c90fe9dd87dbee168c29ad5895f1344cae99cff250e3343a97258050733e4656"
+    },
+    {
+      "clipId": "challenge-demo-5",
+      "speaker": "Hannah",
+      "voiceId": "xC2yu4CWW6vU370IS8Wc",
+      "model": "eleven_v4",
+      "generationId": "neqi2mqmAEeflIH0227A",
+      "durationSeconds": 4.32,
+      "sha256": "c7da86cc11695f7e46ae729203a328fdfb13d584c09b94303e1cee4808c3763a"
+    }
+  ]
+}

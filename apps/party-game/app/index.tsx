@@ -194,8 +194,8 @@ export default function Home() {
         answers are coming after recording.
       </Body>
       <Body muted style={{ fontSize: 11, textAlign: "center" }}>
-        REVIEW BUILD 02 · Temporary synthetic voices. Hannah and Lamorne’s
-        recordings are not in this preview. Family decks are open. No purchases.
+        REVIEW BUILD 03 · Updated synthetic preview voices. Live host recordings
+        are not included. Family decks are open. No purchases.
       </Body>
     </Screen>
   );

@@ -1,4 +1,4 @@
-// Stock ElevenLabs demo voices. Not recordings or clones of the hosts.
+// User-selected ElevenLabs synthetic preview voices. See assets/voice/demo/voice-manifest.json.
 export const DEMO_VOICES: Record<string, {asset:number; text:string; male:boolean}> = {
   "intro-close-call-1": {asset: require('../../assets/voice/demo/intro-close-call-1.mp3'), text: "Close Call! Everyone sees a word. One of you has a slightly different one. Give a short clue, hear everyone out, and find the odd word without saying yours.", male: true},
   "intro-who-wrote-that-1": {asset: require('../../assets/voice/demo/intro-who-wrote-that-1.mp3'), text: "Who Wrote That? Pass the phone and secretly type your answer. We shuffle them. Read each one, then agree who wrote it. Authors, keep a straight face.", male: true},
