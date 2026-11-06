@@ -1,75 +1,158 @@
-import { router, useLocalSearchParams } from 'expo-router';
-import { useState } from 'react';
-import { Pressable, Text, TextInput, View } from 'react-native';
-import { MAX_PLAYERS, MIN_PLAYERS, NIGHT_ORDER, type GameId } from '@/game/night';
-import { useParty } from '@/state/store';
-import { Body, Button, Card, H1, Label, Row, Screen } from '@/ui/kit';
-import { colors, fonts, radius, space, TOUCH_MIN } from '@/ui/theme';
-
+import { router, useLocalSearchParams } from "expo-router";
+import { useState } from "react";
+import { TextInput, View } from "react-native";
+import {
+  ALL_GAMES,
+  cleanName,
+  type GameId,
+  type SessionMode,
+} from "@/game/night";
+import { RULES } from "@/content/decks";
+import { useParty } from "@/state/store";
+import { Body, Button, Card, H1, Label, Row, Screen } from "@/ui/kit";
+import { colors, fonts } from "@/ui/theme";
 export default function Players() {
-  const { game } = useLocalSearchParams<{ game?: string }>();
-  const players = useParty((s) => s.players);
-  const addPlayer = useParty((s) => s.addPlayer);
-  const removePlayer = useParty((s) => s.removePlayer);
-  const [name, setName] = useState('');
-  const [error, setError] = useState<string | null>(null);
-  const full = players.length >= MAX_PLAYERS;
-
-  const add = () => {
-    if (!name.trim()) return;
-    if (addPlayer(name)) {
-      setName('');
-      setError(null);
-    } else setError(full ? `That’s ${MAX_PLAYERS}, the most a night can hold.` : 'That name is already playing.');
+  const params = useLocalSearchParams<{ game?: string; mode?: string }>();
+  const st = useParty();
+  const game = ALL_GAMES.includes(params.game as GameId)
+    ? (params.game as GameId)
+    : undefined;
+  const mode: SessionMode = game
+    ? "single"
+    : ["short", "full", "teams"].includes(params.mode ?? "")
+      ? (params.mode as SessionMode)
+      : "short";
+  const [names, setNames] = useState<string[]>(() =>
+    Array.from(
+      { length: Math.max(mode === "teams" ? 4 : 3, st.players.length) },
+      (_, i) => st.players[i]?.name ?? "",
+    ),
+  );
+  const [error, setError] = useState("");
+  const [replace, setReplace] = useState(false);
+  const [skip, setSkip] = useState(false);
+  const valid = mode !== "teams" || names.length % 2 === 0;
+  const launch = (withoutNames = false, confirmed = false) => {
+    if (!valid) {
+      setError("Team mode needs an even number so the teams are balanced.");
+      return;
+    }
+    const roster = names.map((n, i) =>
+      withoutNames ? `Player ${i + 1}` : cleanName(n) || `Player ${i + 1}`,
+    );
+    if (new Set(roster.map((n) => n.toLowerCase())).size !== roster.length) {
+      setError("Use a different name or nickname for each person.");
+      return;
+    }
+    if (st.night && st.night.phase !== "crowned" && !confirmed) {
+      setSkip(withoutNames);
+      setReplace(true);
+      return;
+    }
+    st.launch(roster, game, mode);
+    router.replace("/night");
   };
-
   return (
     <Screen>
-      <Label color={colors.accent}>MAKE IT PERSONAL</Label>
-      <H1>{'Names optional.\nNicknames encouraged.'}</H1>
-      <Body muted>{`${MIN_PLAYERS} to ${MAX_PLAYERS} players. First names or nicknames are perfect.`}</Body>
-
+      <Label>
+        {game
+          ? RULES[game].name
+          : mode === "teams"
+            ? "TEAM HANNAH VS TEAM LAMORNE"
+            : mode === "short"
+              ? "THE QUICK MIX"
+              : "THE FULL MESS"}
+      </Label>
+      <H1>Who’s in the room?</H1>
+      <Body>
+        Names make the reveals better. Your crew stays on this device for next
+        time.
+      </Body>
       <Row>
-        <TextInput
-          value={name}
-          onChangeText={setName}
-          onSubmitEditing={add}
-          placeholderTextColor={colors.muted}
-          placeholder={full ? 'Table’s full' : 'Add a name'}
-          editable={!full}
-          maxLength={16}
-          returnKeyType="done"
-          blurOnSubmit={false}
-          accessibilityLabel="Player name"
-          style={{ flex: 1, minHeight: TOUCH_MIN + 8, borderRadius: radius.md, borderWidth: 1.5, borderColor: colors.line, backgroundColor: colors.surface, paddingHorizontal: space.lg, fontFamily: fonts.body, fontSize: 17, color: colors.ink }}
+        <Button
+          title="−"
+          disabled={names.length <= 3}
+          onPress={() => setNames((v) => v.slice(0, -1))}
         />
-        <Button title="Add" onPress={add} disabled={full || !name.trim()} />
+        <Body>{`${names.length} players`}</Body>
+        <Button
+          title="+"
+          disabled={names.length >= 10}
+          onPress={() => setNames((v) => [...v, ""])}
+        />
       </Row>
-      {error ? <Body muted>{error}</Body> : null}
-
-      <View style={{ gap: space.sm }}>
-        {players.map((p, i) => (
-          <Card key={p.id}>
-            <Row>
-              <Text style={{ fontFamily: fonts.bold, fontSize: 17, color: colors.muted, width: 28 }}>{i + 1}</Text>
-              <Text style={{ flex: 1, fontFamily: fonts.bold, fontSize: 17, color: colors.ink }}>{p.name}</Text>
-              <Pressable accessibilityRole="button" accessibilityLabel={`Remove ${p.name}`} onPress={() => removePlayer(p.id)} hitSlop={12}>
-                <Text style={{ fontFamily: fonts.bold, color: colors.coral }}>Remove</Text>
-              </Pressable>
-            </Row>
-          </Card>
-        ))}
-      </View>
-
-      <Button title={players.length >= MIN_PLAYERS ? game ? 'Everyone’s in · Let’s play' : 'Save guest list' : `Add ${MIN_PLAYERS - players.length} more`} disabled={players.length < MIN_PLAYERS} onPress={() => {
-        if (game === 'night' || NIGHT_ORDER.includes(game as GameId)) {
-          const st = useParty.getState();
-          if (!st.isVip()) st.setDeck('family');
-          st.start(game === 'night' ? undefined : game as GameId);
-          router.replace('/night');
-        } else router.back();
-      }} />
-      <Button title="Back to the games" kind="ghost" onPress={() => router.back()} />
+      {names.map((name, i) => (
+        <View key={i} style={{ gap: 5 }}>
+          <Label>
+            {mode === "teams"
+              ? i % 2 === 0
+                ? "TEAM HANNAH"
+                : "TEAM LAMORNE"
+              : `PLAYER ${i + 1}`}
+          </Label>
+          <TextInput
+            accessibilityLabel={`Player ${i + 1} name`}
+            value={name}
+            maxLength={16}
+            placeholder={`Player ${i + 1}`}
+            placeholderTextColor={colors.muted}
+            autoCorrect={false}
+            onChangeText={(text) => {
+              setNames((v) => v.map((x, j) => (j === i ? text : x)));
+              setError("");
+            }}
+            style={{
+              backgroundColor: "white",
+              borderRadius: 14,
+              minHeight: 52,
+              paddingHorizontal: 16,
+              fontSize: 18,
+              fontFamily: fonts.body,
+              color: colors.ink,
+            }}
+          />
+        </View>
+      ))}
+      {!valid ? <Body>Teams need 4, 6, 8, or 10 players.</Body> : null}
+      {error ? <Body>{error}</Body> : null}
+      {replace ? (
+        <Card tint={colors.goldSoft}>
+          <Body>
+            This starts a new session and replaces the current scores.
+          </Body>
+          <Button
+            title="Start this new session"
+            onPress={() => launch(skip, true)}
+          />
+          <Button
+            title="Keep current game"
+            kind="ghost"
+            onPress={() => {
+              setReplace(false);
+              router.replace("/night");
+            }}
+          />
+        </Card>
+      ) : (
+        <>
+          <Button
+            title="Everyone’s in · let’s play"
+            disabled={!valid}
+            onPress={() => launch()}
+          />
+          <Button
+            title="Skip names & play"
+            kind="ghost"
+            disabled={!valid}
+            onPress={() => launch(true)}
+          />
+        </>
+      )}
+      <Button
+        title="Back to games"
+        kind="ghost"
+        onPress={() => router.replace("/")}
+      />
     </Screen>
   );
 }

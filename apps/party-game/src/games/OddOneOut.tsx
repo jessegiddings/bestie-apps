@@ -1,97 +1,172 @@
-import { useState } from 'react';
-import type { WordCard } from '@/content/decks';
-import { pick, scoreOddOneOut } from '@/game/night';
-import { HostLine, useHost, BigCard, Body, Button, Card, H1, H2, Label, PlayerPicker } from '@/ui/kit';
-import { colors } from '@/ui/theme';
-import { useDealtCard, PassTo, type TurnProps } from './shared';
-
-type Step = 'reveal' | 'clues' | 'vote' | 'guess' | 'result';
-
+import { useState } from "react";
+import type { WordCard } from "@/content/decks";
+import type { PairCard } from "@/content/newGames";
+import { currentGame, oddPlayer, pick, scoreOddOneOut } from "@/game/night";
+import { BigCard, Body, Button, H1, H2, Label, PlayerPicker } from "@/ui/kit";
+import { colors } from "@/ui/theme";
+import { PassTo, useDealtCard, type TurnProps } from "./shared";
 export function OddOneOut({ night, player, onDone }: TurnProps) {
-  const card = useDealtCard<WordCard>();
-  const [oddId] = useState(() => pick(night.players).id);
-  const [seat, setSeat] = useState(0);
-  const [peeking, setPeeking] = useState(false);
-  const [step, setStep] = useState<Step>('reveal');
-  const [guessed, setGuessed] = useState(false);
-  const [votedId, setVotedId] = useState<string | null>(null);
-
-  // Hand the phone round the table starting with this turn's player.
-  const start = night.players.findIndex((p) => p.id === player.id);
-  const order = night.players.map((_, i) => night.players[(start + i) % night.players.length]);
-  const odd = night.players.find((p) => p.id === oddId)!;
-
-  const reaction = step === 'guess' ? 'react-escape-lamorne' : null;
-  useHost(reaction);
-
-  if (!card) return <Body muted>Getting your next card ready…</Body>;
-
-  if (step === 'reveal') {
+  const card = useDealtCard<WordCard | PairCard>();
+  const close = currentGame(night) === "close-call";
+  const odd = oddPlayer(night);
+  const [firstClue] = useState(() =>
+    pick(night.players.filter((p) => p.id !== odd.id)),
+  );
+  const [seat, setSeat] = useState(0),
+    [peek, setPeek] = useState(false),
+    [step, setStep] = useState("reveal"),
+    [suspect, setSuspect] = useState<string | null>(null),
+    [lap, setLap] = useState(1),
+    [guessed, setGuessed] = useState(false);
+  if (!card) return <Body>Dealing secret words…</Body>;
+  const order = night.players.map(
+    (_, i) =>
+      night.players[(night.players.indexOf(player) + i) % night.players.length],
+  );
+  // Classic mode guarantees a real clue first. Close Call gives everyone a word.
+  const first = close ? player : firstClue;
+  const caught = suspect === odd.id;
+  if (step === "reveal") {
     const who = order[seat];
-    if (!peeking) return <PassTo name={who.name} onReady={() => setPeeking(true)} />;
-    const isOdd = who.id === oddId;
+    if (!peek) return <PassTo name={who.name} onReady={() => setPeek(true)} />;
+    const word =
+      who.id === odd.id ? (close ? (card as PairCard).other : null) : card.word;
     return (
       <>
-        {isOdd ? (
-          <BigCard label={`CATEGORY: ${card.category.toUpperCase()}`} tint={colors.coralSoft} color={colors.coral}>
-            You’re the Odd One Out. Blend in.
-          </BigCard>
-        ) : (
-          <BigCard label={`CATEGORY: ${card.category.toUpperCase()} · THE WORD IS`}>{card.word}</BigCard>
-        )}
+        <BigCard
+          tint={close ? "#FFE2B7" : colors.surface}
+          label={`CATEGORY: ${card.category.toUpperCase()}`}
+        >
+          {word ?? "You’re the Odd One Out. Blend in."}
+        </BigCard>
+        <Body muted>
+          {close
+            ? "Remember your word. You might have the odd word."
+            : "Memorize this, then hide it before passing."}
+        </Body>
         <Button
-          title={seat === order.length - 1 ? 'Hide it, everyone’s seen theirs' : 'Hide it and pass'}
+          title={
+            seat === order.length - 1
+              ? "Hide it · everyone is ready"
+              : "Hide it & pass"
+          }
           onPress={() => {
-            setPeeking(false);
-            if (seat === order.length - 1) setStep('clues');
+            setPeek(false);
+            if (seat === order.length - 1) setStep("clues");
             else setSeat(seat + 1);
           }}
         />
       </>
     );
   }
-
-  if (step === 'clues') {
+  if (step === "clues")
     return (
       <>
-        <Label color={colors.accent}>{`CATEGORY: ${card.category.toUpperCase()}`}</Label>
-        <H1>One-word clues.</H1>
-        <Body>{`Go around the table starting with ${player.name}. One word each about the secret word. Not too obvious, or the Odd One will catch on.`}</Body>
-        <Button title="Everyone’s given a clue" onPress={() => setStep('vote')} />
+        <Label>{`CLUE LAP ${lap} · ${card.category.toUpperCase()}`}</Label>
+        <H1>One word. Act natural.</H1>
+        <Body>{`${first.name} starts, then go left around the room. Give one-word clues. Don’t say the secret word.`}</Body>
+        <Button
+          title="Everyone gave a clue · discuss"
+          onPress={() => setStep("vote")}
+        />
       </>
     );
-  }
-
-  if (step === 'vote') {
+  if (step === "vote")
     return (
       <>
-        <H2>Talk it over, then vote. Who’s the Odd One?</H2>
-        <PlayerPicker players={night.players} onPick={(id) => { setVotedId(id); setStep(id === oddId ? 'result' : 'guess'); }} />
+        <H2>Who sounds a little off?</H2>
+        <Body>
+          Discuss. If the vote ties, hear one more clue and agree on one
+          suspect.
+        </Body>
+        <PlayerPicker
+          players={night.players}
+          selected={suspect}
+          onPick={setSuspect}
+        />
+        <Button
+          title="Lock the room’s vote"
+          disabled={!suspect}
+          onPress={() => setStep(close ? "result" : "guess")}
+        />
+        <Button
+          title="Another lap of clues"
+          kind="secondary"
+          onPress={() => {
+            setLap(lap + 1);
+            setSuspect(null);
+            setStep("clues");
+          }}
+        />
       </>
     );
-  }
-
-  if (step === 'guess') return <>
-    <Label>THE BLUFFER ESCAPED</Label>{reaction ? <HostLine clipId={reaction} /> : null}<H2>{`${odd.name}, one chance to name the secret word.`}</H2>
-    <Body>Say your guess out loud before anyone reveals it. Everyone who saw the word: was that right?</Body>
-    <Button title="Correct guess · +3" kind="good" onPress={() => { setGuessed(true); setStep('result'); }} />
-    <Button title="Wrong guess · +2" kind="secondary" onPress={() => { setGuessed(false); setStep('result'); }} />
-  </>;
-  const caught = votedId === oddId;
+  if (step === "guess")
+    return (
+      <>
+        <Label>
+          {caught ? "CAUGHT… BUT ONE LAST CHANCE" : "THE BLUFFER ESCAPED"}
+        </Label>
+        <H2>{`${odd.name}, guess the secret word out loud.`}</H2>
+        <Body>
+          {caught
+            ? "A correct guess earns you +2. Everyone else still earns +1 for catching you."
+            : "You earned +2 for escaping. Guess the word for bragging rights."}
+        </Body>
+        <Button
+          title="Guess spoken · reveal the word"
+          onPress={() => setStep("judge")}
+        />
+      </>
+    );
+  if (step === "judge")
+    return (
+      <>
+        <BigCard label="THE SECRET WORD">{card.word}</BigCard>
+        <H2>Did the bluffer say this word?</H2>
+        <Button
+          title="Yes, they got it"
+          onPress={() => {
+            setGuessed(true);
+            setStep("result");
+          }}
+        />
+        <Button
+          title="No, they missed"
+          kind="secondary"
+          onPress={() => {
+            setGuessed(false);
+            setStep("result");
+          }}
+        />
+      </>
+    );
   return (
     <>
-      <Card tint={caught ? colors.goodSoft : colors.coralSoft}>
-        <Label color={caught ? colors.good : colors.coral}>{caught ? 'CAUGHT' : 'THEY GOT AWAY WITH IT'}</Label>
-        <H2>{`${odd.name} was the Odd One Out. The word was “${card.word}”.`}</H2>
-      </Card>
-      {caught ? (
-        <Button title="Everyone else +1" kind="good" onPress={() => onDone(scoreOddOneOut(night.players, oddId, true, false))} />
-      ) : (
-        <>
-          <Body>{`${odd.name} earns ${guessed ? 3 : 2} points.`}</Body>
-          <Button title="Next turn" onPress={() => onDone(scoreOddOneOut(night.players, oddId, false, guessed))} />
-        </>
-      )}
+      <Label>{caught ? "CAUGHT" : "GOT AWAY WITH IT"}</Label>
+      <H1>{odd.name}</H1>
+      <Body>
+        {close
+          ? `Most players had “${card.word}”. ${odd.name} had “${(card as PairCard).other}”.`
+          : `The secret word was “${card.word}”.`}
+      </Body>
+      <Body>
+        {caught
+          ? `Everyone else +1.${!close && guessed ? " Bluffer +2 for the correct word." : ""}`
+          : "Bluffer +2 total."}
+      </Body>
+      <Button
+        title="Bank the points"
+        onPress={() =>
+          onDone(
+            scoreOddOneOut(
+              night.players,
+              odd.id,
+              caught,
+              close ? false : guessed,
+            ),
+          )
+        }
+      />
     </>
   );
 }

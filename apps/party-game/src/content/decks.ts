@@ -1,3 +1,4 @@
+import { TAKE_TWO, WHO_WROTE, CLOSE_CALL, type ActingCard, type PairCard } from './newGames';
 import type { DeckId, GameId } from '@/game/night';
 
 /**
@@ -251,45 +252,87 @@ export const FORFEITS: readonly string[] = [
   'Do ten seconds of your most dramatic slow-motion.',
   'Speak only in questions until your next turn.',
   'Do your best impression of someone in the room. They get to pick who.',
-  'Show the group the last photo you took. No explanations allowed.',
+  'Invent the title of a film about your day.',
   'Invent a handshake with the player on your right.',
   'Narrate everything you do in a nature-documentary voice for one minute.',
   'Tell the group your most-played song this week.',
   'Hold a statue pose until someone laughs.',
 ];
 
-export const RULES: Record<GameId, { name: string; tagline: string; rules: [string, string] }> = {
-  'point-blank': {
-    name: 'Point Blank',
-    tagline: 'Who’s most likely to…',
-    rules: ['Read the question, then 3, 2, 1, everyone points at once.', 'Most fingers tells the story for a point, or takes a forfeit.'],
+export const RULES: Record<GameId, { name:string; tagline:string; rules:[string,string] }> = {
+  "point-blank": {
+    "name": "Point Blank",
+    "tagline": "Point first. Explain yourself later.",
+    "rules": [
+      "The reader secretly predicts the vote, then everyone points together.",
+      "The most-pointed player tells a story. Ties get a quick face-off."
+    ]
   },
-  'odd-one-out': {
-    name: 'Odd One Out',
-    tagline: 'One of you doesn’t know the word.',
-    rules: ['Pass the phone. Everyone sees the secret word except the Odd One, who only sees the category.', 'One-word clues each, then vote. Catch them, or they score big.'],
+  "bestie-test": {
+    "name": "Hot Seat",
+    "tagline": "Do you actually know your people?",
+    "rules": [
+      "The hot seat secretly picks one of four answers.",
+      "Everyone else shows 1–4 fingers together. Mark each correct guesser."
+    ]
   },
-  'bestie-test': {
-    name: 'Bestie Test',
-    tagline: 'How well do you really know them?',
-    rules: ['The player in the hot seat secretly picks their answer.', 'Everyone else agrees on a guess. Match it and you all score.'],
+  "odd-one-out": {
+    "name": "Odd One Out",
+    "tagline": "One of you is making it up.",
+    "rules": [
+      "Pass the phone. One player sees only the category, not the word.",
+      "Give clues, vote for one suspect, then give the bluffer a last guess."
+    ]
   },
-  'real-or-made-up': {
-    name: 'Real or Made Up',
-    tagline: 'Tell it like you mean it.',
-    rules: ['The storyteller secretly sees TRUTH or MAKE IT UP, then tells a 45 second story.', 'The group votes. Fool them for 2 points.'],
+  "real-or-made-up": {
+    "name": "Real or Made Up",
+    "tagline": "A good story. A better poker face.",
+    "rules": [
+      "Pick a prompt and secretly see TRUTH or MAKE IT UP. Tell your story.",
+      "Ask questions, then everyone votes with thumbs. Mark correct voters."
+    ]
   },
-  'last-word': {
-    name: 'Last Word',
-    tagline: 'Hot potato, with words.',
-    rules: ['Name one thing in the category, then pass the phone.', 'A hidden timer runs out. Whoever’s holding it misses the point.'],
+  "last-word": {
+    "name": "Last Word",
+    "tagline": "The last player standing takes it.",
+    "rules": [
+      "Name something in the category and pass left. No repeats.",
+      "At the buzzer the holder is out. New category, survivors play on."
+    ]
   },
+  "take-two": {
+    "name": "Take Two",
+    "tagline": "One line. Absolutely no dignity.",
+    "rules": [
+      "The actor sees a line and one secret direction. Perform without saying the direction.",
+      "Everyone else guesses with 1–4 fingers. Reveal, then mark who got it."
+    ]
+  },
+  "who-wrote-that": {
+    "name": "Who Wrote That?",
+    "tagline": "Your words. Their terrible guesses.",
+    "rules": [
+      "Pass the phone so everyone privately writes an answer to the same prompt.",
+      "Read the shuffled answers. Agree on an author for each, then reveal."
+    ]
+  },
+  "close-call": {
+    "name": "Close Call",
+    "tagline": "Everyone has a word. One is a little off.",
+    "rules": [
+      "Pass the phone. One player gets a near-miss word. Nobody knows who.",
+      "Give one-word clues, discuss, then vote for the odd word-holder."
+    ]
+  }
 };
 
-export type AnyCard = PromptCard | WordCard | ChoiceCard;
+export type AnyCard = PromptCard | WordCard | ChoiceCard | ActingCard | PairCard;
 
 export function cardsFor(game: GameId, deck: DeckId): AnyCard[] {
   switch (game) {
+    case 'take-two': return TAKE_TWO;
+    case 'who-wrote-that': return WHO_WROTE;
+    case 'close-call': return CLOSE_CALL;
     case 'point-blank':
       return POINT_BLANK[deck];
     case 'odd-one-out':
@@ -316,10 +359,37 @@ export function toYou(question: string): string {
 }
 
 /** Short public examples; these never disclose a live secret. */
-export const HOW_TO: Record<GameId, { example: string; scoring: string }> = {
- 'point-blank': { example: '“Who would argue with a GPS?” Count down, then everyone points together.', scoring: 'Most-pointed player: tell the story for +1, or pass for 0. A tied vote skips the turn.' },
- 'bestie-test': { example: 'Alex secretly picks “Dessert first.” The group tries to guess Alex’s answer.', scoring: 'Match: everyone +1. Miss: 0. This is a cooperative round; the gaps between scores stay the same.' },
- 'odd-one-out': { example: 'If the word were “Beach,” a clue could be “Sand.” The bluffer hears the category, not the word.', scoring: 'Caught: everyone else +1. Escape: bluffer +2, plus 1 for guessing before the reveal. If the vote ties, discuss and choose one suspect.' },
- 'real-or-made-up': { example: '“A disastrous holiday.” Only the storyteller knows whether their instructions say truth or fiction.', scoring: 'Fool the group: storyteller +2. Get caught: everyone else +1. Agree on one group vote.' },
- 'last-word': { example: 'Category: fruit. “Apple.” Pass left. “Banana.” Pass left. Keep going until time runs out.', scoring: 'Everyone except the final holder +1. Repeated or wrong answer? Keep holding the phone until you give a valid one.' },
+export const HOW_TO: Record<GameId, {example:string; scoring:string}> = {
+  "point-blank": {
+    "example": "“Who would argue with a GPS?” The reader predicts, then the room points.",
+    "scoring": "Reader predicts correctly: +2. Most-pointed player tells a story: +1. Tied players plead their case and you vote again."
+  },
+  "bestie-test": {
+    "example": "Alex picks “Dessert first.” Everyone else shows the number they think Alex picked.",
+    "scoring": "Each correct guesser +1. The hot seat gets +1 per correct guesser. Select nobody if everyone missed."
+  },
+  "odd-one-out": {
+    "example": "The word is “Beach.” One player knows only “Places.” Clues might be “Sand” or “Holiday.”",
+    "scoring": "Catch them: everyone else +1. A caught bluffer can still guess for +2. Escaping pays +2 total. One suspect per vote."
+  },
+  "real-or-made-up": {
+    "example": "“A disastrous holiday.” The teller knows whether to tell the truth or invent everything.",
+    "scoring": "Each correct voter +1. The teller gets +1 per fooled voter. Keep thumbs visible while you mark the results."
+  },
+  "last-word": {
+    "example": "“Fruit.” Apple, pass. Banana, pass. The buzzer knocks out the holder. Survivors get a new category.",
+    "scoring": "Winner +3. Runner-up +1. No points for earlier eliminations. Challenge freezes the timer while the room rules."
+  },
+  "take-two": {
+    "example": "“Can you pass the salt?” Secret direction: like a villain revealing the plan.",
+    "scoring": "Each correct guesser +1. Actor +1 per correct guesser. A second take is always allowed."
+  },
+  "who-wrote-that": {
+    "example": "“My warning label should say…” Everyone writes privately. Guess who wrote “Keep away from snacks.”",
+    "scoring": "Catch the author: everyone else +1. Fool the group: author +2. Authors bluff along but do not cast the deciding vote."
+  },
+  "close-call": {
+    "example": "Most see “Pancake.” One sees “Waffle.” Nobody sees a role label. Who sounds just a little off?",
+    "scoring": "Catch the odd word-holder: everyone else +1. If they escape: +2. Discuss ties and agree on one suspect."
+  }
 };

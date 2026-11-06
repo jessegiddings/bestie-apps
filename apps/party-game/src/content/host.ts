@@ -18,6 +18,18 @@ export const OPENERS = [
 ];
 
 export const GAME_INTROS: Record<GameId, Clip[]> = {
+  'take-two': [
+    line('intro-take-two-1', 'Take Two! One ordinary line. One secret direction. Perform it, then everyone guesses your direction with one, two, three, or four fingers.'),
+    line('intro-take-two-2', 'Take Two! One ordinary line. One secret direction. Perform it, then everyone guesses your direction with one, two, three, or four fingers.'),
+  ],
+  'who-wrote-that': [
+    line('intro-who-wrote-that-1', 'Who Wrote That? Pass the phone and secretly type your answer. We shuffle them. Read each one, then agree who wrote it. Authors, keep a straight face.'),
+    line('intro-who-wrote-that-2', 'Who Wrote That? Pass the phone and secretly type your answer. We shuffle them. Read each one, then agree who wrote it. Authors, keep a straight face.'),
+  ],
+  'close-call': [
+    line('intro-close-call-1', 'Close Call! Everyone sees a word. One of you has a slightly different one. Give a short clue, hear everyone out, and find the odd word without saying yours.'),
+    line('intro-close-call-2', 'Close Call! Everyone sees a word. One of you has a slightly different one. Give a short clue, hear everyone out, and find the odd word without saying yours.'),
+  ],
   'point-blank': [
     line('intro-point-blank-1', 'Point Blank! I read it, I count to three, you point. No hesitating, and no pointing at yourself to be polite.'),
     line('intro-point-blank-2', 'Time to find out what your friends really think of you. Fingers ready.'),

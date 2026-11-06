@@ -1,43 +1,202 @@
-import { setMuted, useVoice } from '@bestie/core';
-import { router } from 'expo-router';
-import { useState } from 'react';
-import { Image, Pressable, Text, View, useWindowDimensions } from 'react-native';
-import { NIGHT_ORDER, type GameId } from '@/game/night';
-import { useParty } from '@/state/store';
-import { Body, Button, Card, Chip, Label, Row, Screen } from '@/ui/kit';
-import { GameArt, GAME_LOOK } from '@/ui/GameArt';
-import { colors, fonts } from '@/ui/theme';
-
+import { setMuted, useVoice } from "@bestie/core";
+import { router } from "expo-router";
+import {
+  Image,
+  Pressable,
+  Text,
+  View,
+  useWindowDimensions,
+} from "react-native";
+import { ALL_GAMES, type GameId } from "@/game/night";
+import { RULES } from "@/content/decks";
+import { useParty } from "@/state/store";
+import { Body, Button, Card, H1, Label, Row, Screen } from "@/ui/kit";
+import { GameArt, GAME_LOOK } from "@/ui/GameArt";
+import { colors, fonts } from "@/ui/theme";
 export default function Home() {
- const { width } = useWindowDimensions();
- const coverSize = Math.min(width, 560) - 48;
- const st=useParty(); const muted=useVoice(s=>s.muted);
- const [count,setCount]=useState(Math.max(3,st.players.length));
- const [replace,setReplace]=useState<{game?:GameId}|null>(null);
- const active=st.night && st.night.phase!=='crowned';
- const begin=(game?:GameId)=>{st.quickStart(count,game);setReplace(null);router.push('/night');};
- const go=(game?:GameId)=>active?setReplace({game}):begin(game);
- return <Screen>
-  <Row><View style={{flex:1}}><Label color={colors.ink}>A LITTLE CHAOS. GREAT COMPANY.</Label></View><Pressable accessibilityRole="switch" accessibilityLabel="Host sound" accessibilityState={{checked:!muted}} onPress={()=>setMuted(!muted)} style={{minHeight:44,justifyContent:'center'}}><Text style={{fontFamily:fonts.bold,color:colors.accent,fontSize:11}}>{muted?'SOUND OFF':'SOUND ON'}</Text></Pressable></Row>
-  <View style={{gap:10}}>
-   <Image source={require('../assets/mess-around-cover.jpeg')} accessibilityLabel="The Mess Around with Hannah Simone and Lamorne Morris" resizeMode="contain" style={{width:coverSize,height:coverSize,borderRadius:20}} />
-   <Body muted style={{textAlign:'center',fontSize:13}}>The podcast chemistry. Your game night.</Body>
-  </View>
-  {active?<Button title="Continue playing →" onPress={()=>router.push('/night')}/>:null}
-  <View style={{backgroundColor:colors.ink,borderRadius:24,padding:20,gap:16}}>
-   <Row><View style={{flex:1,gap:4}}><Label color="#FFD85B">QUICK PLAY</Label><Text style={{fontFamily:fonts.bold,fontSize:20,color:'white'}}>How many of you?</Text></View><Pressable accessibilityRole="button" accessibilityLabel="Fewer players" disabled={count<=3} onPress={()=>setCount(count-1)} style={{padding:12}}><Text style={{color:count<=3?'#81766D':'white',fontSize:26}}>−</Text></Pressable><Text accessibilityLiveRegion="polite" style={{color:'white',fontFamily:fonts.bold,fontSize:28}}>{count}</Text><Pressable accessibilityRole="button" accessibilityLabel="More players" disabled={count>=10} onPress={()=>setCount(count+1)} style={{padding:12}}><Text style={{color:count>=10?'#81766D':'white',fontSize:26}}>+</Text></Pressable></Row>
-   <Pressable accessibilityRole="button" onPress={()=>go('point-blank')} style={({pressed})=>({backgroundColor:colors.lime,borderRadius:16,padding:18,opacity:pressed?.8:1})}><Text style={{fontFamily:fonts.bold,fontSize:18,color:colors.ink,textAlign:'center'}}>Let’s mess around  →</Text></Pressable>
-   <Text style={{color:'#D8CEC4',fontFamily:fonts.body,fontSize:12,textAlign:'center'}}>Starts with Point Blank · No names needed</Text>
-  </View>
-  <Pressable accessibilityRole="button" accessibilityLabel="Play against Hannah and Lamorne" onPress={()=>router.push('/hosts')}><Card tint={colors.accentSoft} style={{padding:22,gap:10}}><Label color={colors.accent}>NEW · THE HOST CHALLENGE</Label><Text style={{fontFamily:fonts.bold,fontSize:25,lineHeight:29,color:colors.ink}}>Your room vs. Hannah & Lamorne.</Text><Body>Five questions. One team. Can you beat the hosts?</Body><Text style={{fontFamily:fonts.bold,color:colors.accent}}>Explore the challenge →</Text></Card></Pressable>
-  {replace?<Card tint={colors.goldSoft}><Body>Start fresh? This replaces your current scores.</Body><Button title="Start fresh" onPress={()=>begin(replace.game)}/><Button title="Keep playing" kind="ghost" onPress={()=>setReplace(null)}/></Card>:null}
-  <Row><View style={{flex:1}}><Label>FIVE WAYS TO MAKE A SCENE</Label></View><Pressable accessibilityRole="button" onPress={()=>router.push('/players')} style={{paddingVertical:12}}><Text style={{fontFamily:fonts.bold,color:colors.accent,fontSize:12}}>Add names ↗</Text></Pressable></Row>
-  <View style={{flexDirection:'row',flexWrap:'wrap',gap:12}}>{NIGHT_ORDER.map((g,i)=><Pressable key={g} accessibilityRole="button" accessibilityLabel={`Play ${GAME_LOOK[g].short.replace('\n',' ')}`} onPress={()=>go(g)} style={({pressed})=>({width:i===4?'100%':'48%',flexGrow:1,backgroundColor:GAME_LOOK[g].color,borderRadius:22,padding:18,minHeight:i===4?140:230,opacity:pressed?.8:1,overflow:'hidden'})}>
-    <View style={{flexDirection:i===4?'row':'column',alignItems:i===4?'center':'flex-start',gap:8}}><View style={{flex:1,gap:8}}><Text style={{fontFamily:fonts.bold,fontSize:10,color:colors.ink}}>0{i+1} / {i===0?'START HERE':'PLAY'}</Text><Text style={{fontFamily:fonts.bold,fontSize:27,lineHeight:29,letterSpacing:-1,color:colors.ink}}>{GAME_LOOK[g].short}</Text></View><View style={{alignSelf:'flex-end'}}><GameArt game={g} size={94}/></View></View>
-   </Pressable>)}</View>
-  <Button title="Play all five · The full mess →" kind="secondary" onPress={()=>go()}/>
-  <Row><View style={{flex:1,gap:4}}><Label>YOUR CROWD</Label><Body muted style={{fontSize:12}}>Family is free. Friends gets cheekier.</Body></View></Row>
-  <Row><Chip label="Family" selected={st.deck==='family'} onPress={()=>st.setDeck('family')}/><Chip label={st.isVip()?'Friends':'Friends · VIP'} selected={st.deck==='friends'} onPress={()=>st.isVip()?st.setDeck('friends'):router.push('/premium')}/></Row>
-  <Body muted style={{fontSize:11,textAlign:'center'}}>Preview uses temporary synthetic voices, not Hannah or Lamorne’s recordings.</Body>
- </Screen>;
+  const { width } = useWindowDimensions();
+  const st = useParty();
+  const muted = useVoice((s) => s.muted);
+  const active = st.night && st.night.phase !== "crowned";
+  const play = (game: GameId) => router.push(`/players?game=${game}`);
+  return (
+    <Screen>
+      <Row>
+        <View style={{ flex: 1 }}>
+          <Label color={colors.ink}>THE GAME NIGHT EDITION</Label>
+        </View>
+        <Pressable
+          accessibilityRole="switch"
+          accessibilityLabel="Host sound"
+          accessibilityState={{ checked: !muted }}
+          onPress={() => setMuted(!muted)}
+          style={{ minHeight: 44, justifyContent: "center" }}
+        >
+          <Text
+            style={{
+              fontFamily: fonts.bold,
+              color: colors.accent,
+              fontSize: 12,
+            }}
+          >
+            {muted ? "SOUND OFF" : "SOUND ON"}
+          </Text>
+        </Pressable>
+      </Row>
+      <View style={{ alignItems: "center", gap: 10 }}>
+        <Image
+          source={require("../assets/mess-around-cover.jpeg")}
+          accessibilityLabel="The Mess Around with Hannah Simone and Lamorne Morris"
+          resizeMode="contain"
+          style={{
+            width: Math.min(width - 48, 300),
+            height: Math.min(width - 48, 300),
+            borderRadius: 18,
+          }}
+        />
+        <Body muted>One phone. A room full of bad influences.</Body>
+      </View>
+      {active ? (
+        <Button title="Resume our game" onPress={() => router.push("/night")} />
+      ) : null}
+      <View
+        style={{
+          backgroundColor: colors.ink,
+          padding: 24,
+          borderRadius: 24,
+          gap: 14,
+        }}
+      >
+        <Label color={colors.goldSoft}>NEW FOR GAME NIGHT</Label>
+        <Text
+          style={{
+            fontFamily: fonts.bold,
+            fontSize: 30,
+            lineHeight: 34,
+            color: "#FFF8E9",
+          }}
+        >
+          You bring the drama.
+        </Text>
+        <Text
+          style={{
+            fontFamily: fonts.body,
+            color: "#EDE6D7",
+            fontSize: 16,
+            lineHeight: 24,
+          }}
+        >
+          Act a ridiculous scene. Keep your answer secret. Catch the friend
+          who’s a little off.
+        </Text>
+        <Button
+          title="Start with Take Two →"
+          onPress={() => play("take-two")}
+        />
+      </View>
+      <Label>EIGHT WAYS TO MAKE A SCENE</Label>
+      <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 12 }}>
+        {ALL_GAMES.map((g, i) => (
+          <Pressable
+            key={g}
+            accessibilityRole="button"
+            accessibilityLabel={`Play ${RULES[g].name}`}
+            onPress={() => play(g)}
+            style={({ pressed }) => ({
+              width: "47%",
+              flexGrow: 1,
+              backgroundColor: GAME_LOOK[g].color,
+              borderRadius: 22,
+              padding: 17,
+              minHeight: 225,
+              opacity: pressed ? 0.8 : 1,
+              gap: 9,
+            })}
+          >
+            <Label color={colors.ink}>
+              {i < 3
+                ? "NEW GAME"
+                : g === "last-word"
+                  ? "ELIMINATION FINALE"
+                  : "REMIXED"}
+            </Label>
+            <Text
+              style={{
+                fontFamily: fonts.bold,
+                fontSize: 25,
+                lineHeight: 29,
+                color: colors.ink,
+                letterSpacing: -0.8,
+              }}
+            >
+              {GAME_LOOK[g].short}
+            </Text>
+            <View style={{ alignSelf: "flex-end", marginTop: "auto" }}>
+              <GameArt game={g} size={88} />
+            </View>
+          </Pressable>
+        ))}
+      </View>
+      <H1>Make a night of it.</H1>
+      <Body muted>
+        Pick a mix. We handle the order and scores. The finale is worth double.
+      </Body>
+      <Button
+        title="Quick mix · 3 games"
+        onPress={() => router.push("/players?mode=short")}
+      />
+      <Body muted style={{ fontSize: 12 }}>
+        Take Two, Who Wrote That?, Last Word
+      </Body>
+      <Button
+        title="The full mess · 5 games"
+        kind="secondary"
+        onPress={() => router.push("/players?mode=full")}
+      />
+      <Body muted style={{ fontSize: 12 }}>
+        Point Blank, Take Two, Who Wrote That?, Odd One Out, Last Word
+      </Body>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel="Team Hannah versus Team Lamorne"
+        onPress={() => router.push("/players?mode=teams")}
+      >
+        <Card tint={colors.goldSoft}>
+          <Label>CHOOSE A SIDE</Label>
+          <Text
+            style={{
+              fontFamily: fonts.bold,
+              fontSize: 26,
+              color: colors.ink,
+              marginVertical: 10,
+            }}
+          >
+            Team Hannah vs. Team Lamorne
+          </Text>
+          <Body>
+            Two captains. Five games. One winning side. For 4, 6, 8, or 10
+            players.
+          </Body>
+        </Card>
+      </Pressable>
+      <Button
+        title="Write our own prompts"
+        kind="secondary"
+        onPress={() => router.push("/house-rules")}
+      />
+      <Button
+        title="Explore the host challenge"
+        kind="ghost"
+        onPress={() => router.push("/hosts")}
+      />
+      <Body muted style={{ fontSize: 12 }}>
+        The separate host challenge still uses sample puzzles. Personal host
+        answers are coming after recording.
+      </Body>
+      <Body muted style={{ fontSize: 11, textAlign: "center" }}>
+        REVIEW BUILD 02 · Temporary synthetic voices. Hannah and Lamorne’s
+        recordings are not in this preview. Family decks are open. No purchases.
+      </Body>
+    </Screen>
+  );
 }

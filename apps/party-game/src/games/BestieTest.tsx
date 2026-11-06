@@ -1,66 +1,71 @@
-import { useState } from 'react';
-import { View } from 'react-native';
-import { toYou, type ChoiceCard } from '@/content/decks';
-import { scoreBestieTest } from '@/game/night';
-import { HostLine, useHost, BigCard, Body, Button, Card, Chip, H2, Label } from '@/ui/kit';
-import { colors, space } from '@/ui/theme';
-import { useDealtCard, PassTo, type TurnProps } from './shared';
-
-type Step = 'pass' | 'secret' | 'group' | 'result';
-
+import { useState } from "react";
+import { View } from "react-native";
+import { toYou, type ChoiceCard } from "@/content/decks";
+import { scoreReadRoom } from "@/game/night";
+import { BigCard, Body, Button, Chip, H2, Label } from "@/ui/kit";
+import { useDealtCard, PassTo, type TurnProps } from "./shared";
+import { VoteResults } from "./VoteResults";
 export function BestieTest({ night, player, onDone }: TurnProps) {
   const card = useDealtCard<ChoiceCard>();
-  const [step, setStep] = useState<Step>('pass');
+  const [step, setStep] = useState("pass");
   const [answer, setAnswer] = useState<number | null>(null);
-  const [guess, setGuess] = useState<number | null>(null);
-
-  const reaction = step === 'result' ? answer === guess ? 'react-match-lamorne' : 'react-miss-hannah' : null;
-  useHost(reaction);
-
-  if (!card) return <Body muted>Getting your next card ready…</Body>;
-
-  if (step === 'pass') return <PassTo name={player.name} note={`${player.name} is in the hot seat. Everyone else, no peeking.`} onReady={() => setStep('secret')} />;
-
-  const options = (selected: number | null, onPick: (i: number) => void) => (
-    <View style={{ gap: space.sm }}>
-      {card.options.map((o, i) => (
-        <Chip key={o} label={o} selected={selected === i} onPress={() => onPick(i)} />
-      ))}
-    </View>
-  );
-
-  if (step === 'secret') {
+  if (!card) return <Body>Getting the next question…</Body>;
+  if (step === "pass")
+    return <PassTo name={player.name} onReady={() => setStep("secret")} />;
+  if (step === "secret")
     return (
       <>
-        <BigCard label={`${player.name.toUpperCase()}, ANSWER HONESTLY`}>{toYou(card.question)}</BigCard>
-        {options(answer, setAnswer)}
-        <Button title="Lock it in and pass it back" disabled={answer == null} onPress={() => setStep('group')} />
+        <BigCard label={`${player.name}, ONLY YOU LOOK`}>
+          {toYou(card.question)}
+        </BigCard>
+        <View style={{ gap: 10 }}>
+          {card.options.map((o, i) => (
+            <Chip
+              key={i}
+              label={`${i + 1}. ${o}`}
+              selected={answer === i}
+              onPress={() => setAnswer(i)}
+            />
+          ))}
+        </View>
+        <Button
+          title="Lock and hide my answer"
+          disabled={answer === null}
+          onPress={() => setStep("vote")}
+        />
       </>
     );
-  }
-
-  if (step === 'group') {
+  if (step === "vote")
     return (
       <>
-        <Label color={colors.accent}>{`ABOUT ${player.name.toUpperCase()}`}</Label>
-        <BigCard>{card.question}</BigCard>
-        <Body muted>{`Everyone except ${player.name}: agree on one guess.`}</Body>
-        {options(guess, setGuess)}
-        <Button title="Reveal" disabled={guess == null} onPress={() => setStep('result')} />
+        <BigCard label={`ABOUT ${player.name.toUpperCase()}`}>
+          {card.question}
+        </BigCard>
+        {card.options.map((o, i) => (
+          <H2 key={i}>{`${i + 1}. ${o}`}</H2>
+        ))}
+        <Body>
+          Everyone else: choose privately. On three, hold up 1–4 fingers
+          together. Keep them up!
+        </Body>
+        <Button
+          title="Votes are up · reveal"
+          onPress={() => setStep("result")}
+        />
       </>
     );
-  }
-
-  const match = answer === guess;
   return (
     <>
-      <Card tint={match ? colors.goodSoft : colors.coralSoft}>
-        {reaction ? <HostLine clipId={reaction} /> : null}
-        <Label color={match ? colors.good : colors.coral}>{match ? 'BESTIES CONFIRMED' : 'DO YOU EVEN KNOW THEM?'}</Label>
-        <H2>{`${player.name} picked “${card.options[answer!]}”.`}</H2>
-        {!match ? <Body style={{ marginTop: space.xs }}>{`You guessed “${card.options[guess!]}”.`}</Body> : null}
-      </Card>
-      <Button title={match ? 'Everyone +1' : 'No points, next'} kind={match ? 'good' : 'primary'} onPress={() => onDone(scoreBestieTest(night.players, match))} />
+      <Label>THE REVEAL</Label>
+      <BigCard
+        label={`${player.name.toUpperCase()} PICKED`}
+      >{`${answer! + 1}. ${card.options[answer!]}`}</BigCard>
+      <VoteResults
+        players={night.players.filter((p) => p.id !== player.id)}
+        onConfirm={(ids) =>
+          onDone(scoreReadRoom(night.players, player.id, ids))
+        }
+      />
     </>
   );
 }
