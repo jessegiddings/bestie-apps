@@ -99,6 +99,7 @@ function Runner({ night }: { night: Night }) {
   } = useParty.getState();
   const { setPaused } = useGamePause();
   const submitted = useRef<string | null>(null);
+  const [shareFallback, setShareFallback] = useState<string | null>(null);
   const game = currentGame(night);
   const rules = RULES[game];
   const mult = multiplier(night);
@@ -292,6 +293,7 @@ function Runner({ night }: { night: Night }) {
   }
 
   const winner = night.players.find((p) => p.id === night.winnerId);
+  const recap = `The Mess Around: ${night.teamMode ? `Team Hannah ${teamScores(night)[0]} / Team Lamorne ${teamScores(night)[1]}. ` : ""}${standings(night).map(r=>`${r.player.name} ${r.score}`).join(" · ")}. Play with us: https://the-mess-around-review.onrender.com`;
   return (
     <Screen>
       {header}
@@ -315,15 +317,10 @@ function Runner({ night }: { night: Night }) {
         title="Share the night’s scores"
         kind="secondary"
         onPress={() => {
-          void Share.share({
-            message: `The Mess Around: ${standings(night)
-              .map((r) => `${r.player.name} ${r.score}`)
-              .join(
-                " · ",
-              )}. Play with us: https://the-mess-around-review.onrender.com`,
-          }).catch(() => undefined);
+          void Share.share({ message: recap }).catch(() => setShareFallback(night.id));
         }}
       />
+      {shareFallback === night.id ? <Card><Label>COPY YOUR RECAP</Label><Body muted>Select the text below to copy it into a message.</Body><Text selectable style={{fontFamily:fonts.body,fontSize:16,color:colors.ink,lineHeight:24}}>{recap}</Text></Card> : null}
       <Button
         title="Play again"
         onPress={() => {
