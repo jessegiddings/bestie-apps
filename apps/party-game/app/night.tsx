@@ -317,6 +317,7 @@ function Runner({ night }: { night: Night }) {
         title="Share the night’s scores"
         kind="secondary"
         onPress={() => {
+          setShareFallback(night.id);
           void Share.share({ message: recap }).catch(() => setShareFallback(night.id));
         }}
       />
