@@ -1,0 +1,473 @@
+import { cancel, play } from "@bestie/core";
+import { Redirect, router } from "expo-router";
+import { useMemo, useRef, useState } from "react";
+import { Modal, Pressable, Share, Text, View } from "react-native";
+import Svg, { Circle, Path } from "react-native-svg";
+import { HOW_TO, RULES } from "@/content/decks";
+import {
+  choose,
+  CLOSERS,
+  CROWNS,
+  FINAL_ROUND,
+  GAME_INTROS,
+  OPENERS,
+  SCORE_LINES,
+  TIEBREAK,
+} from "@/content/host";
+import {
+  currentGame,
+  leaderIds,
+  multiplier,
+  scoreMood,
+  standings,
+  teamScores,
+  turnPlayer,
+  turnsFor,
+  type Night,
+} from "@/game/night";
+import { PauseContext, useGamePause } from "@/games/shared";
+import { GameArt, GAME_LOOK } from "@/ui/GameArt";
+import { TURN_SCREENS } from "@/games";
+import { useParty } from "@/state/store";
+import {
+  Body,
+  Button,
+  Card,
+  H1,
+  H2,
+  HostLine,
+  Label,
+  PlayerPicker,
+  Row,
+  Screen,
+  styles as kit,
+  useHost,
+} from "@/ui/kit";
+import { colors, fonts, space } from "@/ui/theme";
+
+export default function NightScreen() {
+  const night = useParty((s) => s.night);
+  const [paused, setPaused] = useState(false);
+  if (!night) return <Redirect href="/" />;
+  return (
+    <PauseContext.Provider value={{ paused, setPaused }}>
+      <Runner night={night} />
+      <Modal
+        visible={paused}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setPaused(false)}
+      >
+        <View
+          style={{
+            flex: 1,
+            backgroundColor: "#23201FDD",
+            justifyContent: "center",
+            padding: 24,
+          }}
+        >
+          <Card>
+            <H1>Snack break?</H1>
+            <Body>Your turn is right where you left it.</Body>
+            <Button title="Back to the mess" onPress={() => setPaused(false)} />
+            <Button
+              title="End game & go home"
+              kind="ghost"
+              onPress={() => {
+                cancel();
+                useParty.getState().endNight();
+                setPaused(false);
+                router.replace("/");
+              }}
+            />
+          </Card>
+        </View>
+      </Modal>
+    </PauseContext.Provider>
+  );
+}
+
+function Runner({ night }: { night: Night }) {
+  const {
+    openNight,
+    beginRound,
+    finishTurn,
+    afterScoreboard,
+    breakTie,
+    endNight,
+    start,
+  } = useParty.getState();
+  const { setPaused } = useGamePause();
+  const submitted = useRef<string | null>(null);
+  const [shareFallback, setShareFallback] = useState<string | null>(null);
+  const game = currentGame(night);
+  const rules = RULES[game];
+  const mult = multiplier(night);
+  const roundLabel =
+    night.kind === "night"
+      ? `ROUND ${night.roundIndex + 1} OF ${night.rounds.length}`
+      : `ROUND ${night.roundIndex + 1}`;
+
+  // One host line per moment; the key changes when the moment does, so it plays once.
+  const momentKey = `${night.id}:${night.phase}:${night.roundIndex}`;
+  const hostClip = useMemo(() => {
+    switch (night.phase) {
+      case "opening":
+        return choose(OPENERS);
+      case "round-intro":
+        return mult > 1 ? choose(FINAL_ROUND) : choose(GAME_INTROS[game]);
+      case "scoreboard":
+        return choose(SCORE_LINES[scoreMood(night)]);
+      case "tiebreak":
+        return choose(TIEBREAK);
+      case "crowned":
+        return choose(CROWNS);
+      default:
+        return null;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [momentKey]);
+  useHost(hostClip?.id ?? null);
+
+  const leave = () => {
+    cancel();
+    setPaused(true);
+  };
+
+  const header = (
+    <Row>
+      <View style={{ flex: 1 }}>
+        <Label color={colors.accent}>
+          {night.phase === "opening" || night.phase === "crowned"
+            ? "GAME NIGHT"
+            : roundLabel}
+        </Label>
+      </View>
+      <Pressable accessibilityRole="button" onPress={leave} hitSlop={12}>
+        <Text style={{ fontFamily: fonts.bold, color: colors.muted }}>
+          Pause
+        </Text>
+      </Pressable>
+    </Row>
+  );
+
+  if (night.phase === "opening") {
+    return (
+      <Screen>
+        {header}
+        <H1>{"The room is ready.\nLet’s make a night of it."}</H1>
+        {hostClip ? <HostLine clipId={hostClip.id} /> : null}
+        <Card>
+          <Body>
+            {night.rounds
+              .map(
+                (g, i) =>
+                  `${String(i + 1).padStart(2, "0")}   ${RULES[g].name}${night.kind === "night" && i === night.rounds.length - 1 ? " · double points" : ""}`,
+              )
+              .join("\n")}
+          </Body>
+        </Card>
+        <Button title="Let’s play" onPress={openNight} />
+      </Screen>
+    );
+  }
+
+  if (night.phase === "round-intro") {
+    return (
+      <Screen>
+        {header}
+        {mult > 1 ? (
+          <Label color={colors.gold}>FINAL ROUND · DOUBLE POINTS</Label>
+        ) : null}
+        <View
+          style={{
+            backgroundColor: GAME_LOOK[game].color,
+            borderRadius: 24,
+            padding: 24,
+            gap: 12,
+          }}
+        >
+          <GameArt game={game} size={120} />
+          <H1>{rules.name}</H1>
+        </View>
+        <Body muted>{rules.tagline}</Body>
+        {hostClip ? <HostLine clipId={hostClip.id} /> : null}
+        <Card>
+          <Body>{`1. ${rules.rules[0]}`}</Body>
+          <Body style={{ marginTop: space.sm }}>{`2. ${rules.rules[1]}`}</Body>
+        </Card>
+        <Card tint={colors.goldSoft}>
+          <Label>FOR EXAMPLE</Label>
+          <Body>{HOW_TO[game].example}</Body>
+        </Card>
+        <Body muted style={{ fontSize: 13 }}>
+          {HOW_TO[game].scoring}
+        </Body>
+        <Button title="Start the round" onPress={beginRound} />
+      </Screen>
+    );
+  }
+
+  if (night.phase === "turn") {
+    const player = turnPlayer(night);
+    const Turn = TURN_SCREENS[game];
+    const total = turnsFor(game, night.players.length);
+    return (
+      <Screen>
+        {header}
+        <Body
+          muted
+          style={kit.small}
+        >{`${rules.name} · turn ${night.turnIndex + 1} of ${total}${mult > 1 ? " · double points" : ""}`}</Body>
+        <Turn
+          key={`${night.roundIndex}-${night.turnIndex}`}
+          night={night}
+          player={player}
+          onDone={(awards) => {
+            const key = `${night.id}:${night.roundIndex}:${night.turnIndex}`;
+            if (submitted.current === key) return;
+            submitted.current = key;
+            finishTurn(awards);
+          }}
+        />
+      </Screen>
+    );
+  }
+
+  if (night.phase === "scoreboard") {
+    const last = night.roundIndex >= night.rounds.length - 1;
+    return (
+      <Screen>
+        {header}
+        <Label>
+          {night.kind === "single"
+            ? "ROUND COMPLETE"
+            : "THE FRIENDLY RIVALRY CONTINUES"}
+        </Label>
+        <H1>Who’s on top?</H1>
+        {hostClip ? <HostLine clipId={hostClip.id} /> : null}
+        <Board night={night} />
+        {night.kind === "night" ? (
+          <Button
+            title={
+              last
+                ? "Crown the winner"
+                : `Next: ${RULES[night.rounds[night.roundIndex + 1]].name}`
+            }
+            onPress={() => afterScoreboard("continue")}
+          />
+        ) : (
+          <>
+            <Button
+              title={`Another round of ${rules.name}`}
+              onPress={() => afterScoreboard("again")}
+            />
+            <Button
+              title="Crown the winner"
+              kind="secondary"
+              onPress={() => afterScoreboard("finish")}
+            />
+          </>
+        )}
+      </Screen>
+    );
+  }
+
+  if (night.phase === "tiebreak") {
+    const tied = leaderIds(night.scores);
+    const tiedPlayers = night.players.filter((p) => tied.includes(p.id));
+    return (
+      <Screen>
+        {header}
+        <Label color={colors.gold}>SUDDEN DEATH</Label>
+        <H1>{`It’s a tie between ${tiedPlayers.map((p) => p.name).join(" and ")}.`}</H1>
+        {hostClip ? <HostLine clipId={hostClip.id} /> : null}
+        <Body>
+          {tied.length === night.players.length
+            ? "Everyone’s tied! On three, everyone points at who deserves the crown."
+            : "Everyone else: on three, point at who deserves the crown."}
+        </Body>
+        <PlayerPicker players={tiedPlayers} onPick={breakTie} />
+      </Screen>
+    );
+  }
+
+  const winner = night.players.find((p) => p.id === night.winnerId);
+  const recap = `The Mess Around: ${night.teamMode ? `Team Hannah ${teamScores(night)[0]} / Team Lamorne ${teamScores(night)[1]}. ` : ""}${standings(night).map(r=>`${r.player.name} ${r.score}`).join(" · ")}. Play with us: https://the-mess-around-review.onrender.com`;
+  return (
+    <Screen>
+      {header}
+      <View style={{ alignItems: "center", gap: space.sm }}>
+        <Crown />
+        <Label color={colors.gold}>MASTER OF THE MESS</Label>
+        <H1>
+          {night.teamMode
+            ? teamScores(night)[0] === teamScores(night)[1]
+              ? "A shared crown"
+              : teamScores(night)[0] > teamScores(night)[1]
+                ? "Team Hannah"
+                : "Team Lamorne"
+            : (winner?.name ?? "Everyone")}
+        </H1>
+      </View>
+      {hostClip ? <HostLine clipId={hostClip.id} /> : null}
+      <Board night={night} final />
+      <Awards night={night} />
+      <Button
+        title="Share the night’s scores"
+        kind="secondary"
+        onPress={() => {
+          setShareFallback(night.id);
+          void Share.share({ message: recap }).catch(() => setShareFallback(night.id));
+        }}
+      />
+      {shareFallback === night.id ? <Card><Label>COPY YOUR RECAP</Label><Body muted>Select the text below to copy it into a message.</Body><Text selectable style={{fontFamily:fonts.body,fontSize:16,color:colors.ink,lineHeight:24}}>{recap}</Text></Card> : null}
+      <Button
+        title="Play again"
+        onPress={() => {
+          const mode = night.teamMode
+            ? "teams"
+            : night.kind === "single"
+              ? "single"
+              : night.rounds.length === 3
+                ? "short"
+                : "full";
+          useParty.getState().launch(
+            night.players.map((p) => p.name),
+            night.kind === "single" ? night.rounds[0] : undefined,
+            mode,
+          );
+        }}
+      />
+      <Button
+        title="Done for tonight"
+        kind="secondary"
+        onPress={() => {
+          play(choose(CLOSERS).id, { interrupt: true });
+          endNight();
+          router.replace("/");
+        }}
+      />
+    </Screen>
+  );
+}
+
+function Board({ night, final }: { night: Night; final?: boolean }) {
+  const rows = standings(night);
+  return (
+    <Card>
+      {night.teamMode ? (
+        <>
+          <H2>{`Team Hannah ${teamScores(night)[0]} · Team Lamorne ${teamScores(night)[1]}`}</H2>
+          <Body muted>
+            Individual points contribute to your captain’s total.
+          </Body>
+        </>
+      ) : null}
+      {rows.map((r) => (
+        <Row key={r.player.id}>
+          <Text
+            style={{
+              width: 28,
+              fontFamily: fonts.bold,
+              fontSize: 17,
+              color: r.place === 1 ? colors.gold : colors.muted,
+            }}
+          >
+            {r.place}
+          </Text>
+          <Text
+            style={{
+              flex: 1,
+              fontFamily: fonts.bold,
+              fontSize: 17,
+              color: colors.ink,
+              paddingVertical: space.xs,
+            }}
+          >{`${r.player.name}${night.teamMode ? (night.players.findIndex((p) => p.id === r.player.id) % 2 === 0 ? " · H" : " · L") : ""}`}</Text>
+          {!final && r.gained > 0 ? (
+            <Text
+              style={{
+                fontFamily: fonts.bold,
+                fontSize: 14,
+                color: colors.good,
+                marginRight: space.sm,
+              }}
+            >{`+${r.gained}`}</Text>
+          ) : null}
+          <Text
+            style={{
+              fontFamily: fonts.bold,
+              fontSize: 30,
+              color: colors.accent,
+              fontVariant: ["tabular-nums"],
+            }}
+          >
+            {r.score}
+          </Text>
+        </Row>
+      ))}
+    </Card>
+  );
+}
+
+function Crown() {
+  return (
+    <Svg
+      width={120}
+      height={96}
+      viewBox="0 0 120 96"
+      accessibilityLabel="Crown"
+    >
+      <Path
+        d="M10 80 L18 28 L42 52 L60 14 L78 52 L102 28 L110 80 Z"
+        fill={colors.goldSoft}
+        stroke={colors.gold}
+        strokeWidth={5}
+        strokeLinejoin="round"
+      />
+      <Circle cx={18} cy={24} r={7} fill={colors.gold} />
+      <Circle cx={60} cy={10} r={7} fill={colors.gold} />
+      <Circle cx={102} cy={24} r={7} fill={colors.gold} />
+      <Path
+        d="M14 88 L106 88"
+        stroke={colors.gold}
+        strokeWidth={6}
+        strokeLinecap="round"
+      />
+    </Svg>
+  );
+}
+
+function Awards({ night }: { night: Night }) {
+  const names: Partial<Record<import("@/game/night").GameId, string>> = {
+    "take-two": "Scene stealer",
+    "who-wrote-that": "Mystery writer",
+    "bestie-test": "Knows the room",
+    "real-or-made-up": "Story star",
+    "odd-one-out": "Secret agent",
+    "close-call": "Sharp ears",
+    "point-blank": "Called it",
+    "last-word": "Last one standing",
+  };
+  const rows = Object.entries(night.gameAwards ?? {}).filter(([, points]) =>
+    Object.values(points ?? {}).some((n) => n > 0),
+  );
+  if (!rows.length) return null;
+  return (
+    <Card tint={colors.goldSoft}>
+      <Label>TONIGHT’S HONOURS</Label>
+      {rows.map(([game, points]) => (
+        <Body
+          key={game}
+          style={{ marginTop: 8 }}
+        >{`${names[game as keyof typeof names]}: ${leaderIds(points!)
+          .map((id) => night.players.find((p) => p.id === id)?.name)
+          .join(" & ")}`}</Body>
+      ))}
+      <Body muted style={{ fontSize: 11, marginTop: 8 }}>
+        Based on points earned in each game.
+      </Body>
+    </Card>
+  );
+}

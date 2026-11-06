@@ -8,7 +8,9 @@
   "scripts": {
     "test": "jest",
     "typecheck": "npm run typecheck --workspaces --if-present",
-    "dry": "npm run start --workspace dry-tracker"
+    "dry": "npm run start --workspace dry-tracker",
+    "morning": "npm run start --workspace pep-talks",
+    "night": "npm run start --workspace party-game"
   },
   "jest": {
     "projects": [
@@ -30,6 +32,40 @@
         "displayName": "dry-tracker",
         "preset": "jest-expo",
         "rootDir": "apps/dry-tracker",
+        "testMatch": [
+          "<rootDir>/src/**/*.test.ts"
+        ],
+        "transformIgnorePatterns": [
+          "node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|react-navigation|@react-navigation/.*|zustand)"
+        ],
+        "setupFiles": [
+          "<rootDir>/../../jest.setup.js"
+        ],
+        "moduleNameMapper": {
+          "^@/(.*)$": "<rootDir>/src/$1"
+        }
+      },
+      {
+        "displayName": "pep-talks",
+        "preset": "jest-expo",
+        "rootDir": "apps/pep-talks",
+        "testMatch": [
+          "<rootDir>/src/**/*.test.ts"
+        ],
+        "transformIgnorePatterns": [
+          "node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|react-navigation|@react-navigation/.*|zustand)"
+        ],
+        "setupFiles": [
+          "<rootDir>/../../jest.setup.js"
+        ],
+        "moduleNameMapper": {
+          "^@/(.*)$": "<rootDir>/src/$1"
+        }
+      },
+      {
+        "displayName": "party-game",
+        "preset": "jest-expo",
+        "rootDir": "apps/party-game",
         "testMatch": [
           "<rootDir>/src/**/*.test.ts"
         ],

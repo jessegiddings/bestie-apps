@@ -1,0 +1,48 @@
+{
+  "expo": {
+    "name": "The Mess Around",
+    "slug": "party-game",
+    "version": "0.1.0",
+    "scheme": "bestienight",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "backgroundColor": "#FFF8E9",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "app.bestie.partygame",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "package": "app.bestie.partygame",
+      "adaptiveIcon": {
+        "backgroundColor": "#FFF7EE"
+      }
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-font",
+      "expo-audio",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#F4F3ED"
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": false
+    },
+    "extra": {
+      "eas": {
+        "projectId": ""
+      }
+    }
+  }
+}
